@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> roomr signup </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
+    </head>
+    <body>
+        <h1> Sign Up </h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.fname.label }}: {{ form.fname() }}<br>
+            {{ form.lname.label }}: {{ form.lname() }}<br>
+            {{ form.email.label }}: {{ form.email() }}<br>
+            {{ form.dob.label }}: {{ form.dob() }}<br>
+            {{ form.password.label }}: {{ form.password() }}<br>
+            {{ form.submit() }}
+        </form>
+    </body>
+</html>
