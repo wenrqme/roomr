@@ -66,12 +66,12 @@ def login():
         flash("Invalid Username or password.")
     return render_template("login.html", form=form)
 
-@app.route("/logout")
-@login_required
-def logout():
-    log_out()
-    flash("you have been logged out")
-    return redirect(url_for("login.html"))
+# @app.route("/logout")
+# @login_required
+# def logout():
+#     log_out()
+#     flash("you have been logged out")
+#     return redirect(url_for("login.html"))
 
 @app.route("/signup", methods=["GET","POST"])
 def signup():
@@ -89,8 +89,8 @@ def signup():
         password = form.password.data
         form.password.data = None
         return render_template('signupresp.html', form=form)
-        else: 
-            flash('Some information is incorrect')
+    else: 
+        flash('Some information is incorrect')
   
     
     return render_template("signup.html", form=form)
