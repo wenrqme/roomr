@@ -45,6 +45,11 @@ class SignupForm(FlaskForm):
     dob = DateField("Date of Birth", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Submit")
+    
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError("Please use a different email")
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -61,9 +66,33 @@ def login():
         flash("Invalid Username or password.")
     return render_template("login.html", form=form)
 
+@app.route("/logout")
+@login_required
+def logout():
+    log_out()
+    flash("you have been logged out")
+    return redirect(url_for("login.html"))
+
 @app.route("/signup", methods=["GET","POST"])
 def signup():
+    fname, lname, email, dob, password = None, None, None, None, None
     form = SignupForm()
+    if form.validate_on_submit():
+        fname = form.fname.data
+        form.name.data = None 
+        lname = form.lname.data
+        form.lname.data = None
+        email = form.email.data
+        form.lname.data = None
+        dob = form.dob.data
+        form.dob.data = None 
+        password = form.password.data
+        form.password.data = None
+        return render_template('signupresp.html', form=form)
+        else: 
+            flash('Some information is incorrect')
+  
+    
     return render_template("signup.html", form=form)
 
 # """
