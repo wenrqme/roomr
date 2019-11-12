@@ -2,12 +2,14 @@
 <html>
     <head>
         <title>Welcome! </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
     </head>
     <body>
-    <h1> Welcome, new roomr user {{user.fname}} {{user.lname}} !!</h1>
+    <h1> Welcome, new roomr user!!</h1>
     <p>
         An email has been sent to you! 
     </p>
+    <a href="login"> Login </a>
 
     </body>
 </html>

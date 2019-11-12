@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Hello, roomr User! </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
+    </head> 
+    <body>
+       
+        {% if current_user.is_authenticated %}
+           <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
+        {% endif %}
+        
+        <p>hiHi</p>
+
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('logout') }}"> <button type="button"> Log Out </button> </a>
+        {% else %}
+        <a href="{{ url_for('login') }}"> <button type="button"> Log In </button> </a>
+        {% endif %}
+
+    </body>
+    </html>

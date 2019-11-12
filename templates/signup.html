@@ -8,10 +8,10 @@
         <h1> Sign Up </h1>
         <form method="POST">
             {{ form.hidden_tag() }}
-            {{ form.fname.label }}: {{ form.fname() }}<br>
-            {{ form.lname.label }}: {{ form.lname() }}<br>
-            {{ form.email.label }}: {{ form.email() }}<br>
-            {{ form.dob.label }}: {{ form.dob() }}<br>
+            {{ form.fname.label }}: {{ form.fname(size = 15, maxlength = 32) }}<br>
+            {{ form.lname.label }}: {{ form.lname(size = 15, maxlength = 32) }}<br>
+            {{ form.email.label }}: {{ form.email(type="email", size = 30, maxlength = 64) }}<br>
+            {{ form.dob.label }}: {{ form.dob(type="date", size = 8, maxlength = 8) }}<br>
             {{ form.password.label }}: {{ form.password() }}<br>
             {{ form.submit() }}
         </form>
