@@ -9,10 +9,14 @@ from hashlib import sha512
 from werkzeug import generate_password_hash, check_password_hash
 # from cryptography.fernet import Ferne
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DateField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, Email, ValidationError
+from wtforms import StringField, SubmitField, DateField, PasswordField, BooleanField, FileField, TextAreaField, SelectField
+from wtforms.validators import DataRequired, Email, ValidationError, EqualTo
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
-
+import ssl
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 app = Flask(__name__)
@@ -24,12 +28,6 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-@app.route('/', methods=["GET"])
-def home():
-    return render_template("home.html")
-    #need links to login or create an account
-
 
 # 
 # Database Stuff
@@ -55,6 +53,8 @@ class User(UserMixin, db.Model):
     lname = db.Column(db.String(32), index=True, nullable=False)
     dob = db.Column(db.DateTime, index=True,nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    confirmed = db.Column(db.Boolean(), default=False)
+
     
     @property
     def password(self):
@@ -66,6 +66,10 @@ class User(UserMixin, db.Model):
     
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(app.config["Secret_Key"], expiration)
+        return s.dumps({"confirm": self.id}).decode("utf-8")
 
 db.create_all()
 
@@ -87,13 +91,34 @@ class SignupForm(FlaskForm):
     lname = StringField("Last Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
     dob = DateField("Date of Birth", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired(), EqualTo('password2', message='Passwords must match.')])
+    password2 = PasswordField('Confirm password', validators=[DataRequired()])
     submit = SubmitField("Submit")
-    
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError("Please use a different email")
+
+class ProfileForm(FlaskForm):
+    profilePicture = FileField("Profile Picture")
+    location = StringField("Location", validators=[DataRequired()])
+    gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
+    bio = TextAreaField("Bio", validators=[DataRequired()])
+    smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
+    sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validartors=[DataRequired()])
+    
+    genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
+    
+    
+
+
+
+
+
+@app.route('/', methods=["GET"])
+def home():
+    return render_template("home.html")
+    #need links to login or create an account
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -124,15 +149,10 @@ def signup():
     print(form.validate_on_submit())
     if form.validate_on_submit():
         fname = form.fname.data
-        form.fname.data = None 
         lname = form.lname.data
-        form.lname.data = None
         email = form.email.data
-        form.email.data = None
         dob = form.dob.data
-        form.dob.data = None
         userPassword = form.password.data
-        form.password.data = None
         user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword)
         db.session.add(user)
         db.session.commit()
@@ -144,11 +164,52 @@ def signup():
     return render_template("signup.html", form=form)
 
 
-@app.route("/user", methods=["GET"])
+@app.route("/user/<string:uid>", methods=["GET"])
 @login_required
-def user():
+def user(uid):
     return render_template("user.html")
 
+
+@app.route("/confirm/<string:token>")
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        password
+    elif current_user.confirm(token):
+        flash("Thank you for confirming your account.")
+    else:
+        flash("Your confirmation link is invalid or has expired")
+    return redirect(url_for("home"))
+
+@app.route("/user/edit")
+@login_required
+def editProfile():
+    return render_template("edit_profile.html")
+
+""" 
+email authentication
+"""
+subject = "roomr Account Confirmation"
+sender = "roomr@mailinator.com"
+recipient = "asiegle@u.rochester.edu"
+
+
+#create the Message
+msg = MIMEMultipart("alternative")
+msg["Subject"] = subject
+msg["From"] = sender
+msg["To"] = recipient
+
+#Record the MIME types of both parts - text/plain and text/html
+part1 = MIMEText("hiHi", "plain")
+part2 = MIMEText("email_Auth.html", "html")
+
+#Send Message
+context = ssl.create_default_context()
+server, port = "127.0.0.1", 25
+with smtplib.SMTP_SSL(server, port, context=context) as s:
+    s.login(sender, "123") # this line makes it password restricted
+    s.sendmail(sender, recipient, msg.as_string())
 
 
 if __name__ == "__main__": 

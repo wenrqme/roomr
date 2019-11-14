@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> roomr signup </title>
+        <title> Edit profile </title>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
     </head>
     <body>
-        <h1> Sign Up </h1>
+        <!-- <h1> Account Info </h1>
         <form method="POST">
             {{ form.hidden_tag() }}
             {{ form.fname.label }}: {{ form.fname(size = 15, maxlength = 32) }}<br>
             {{ form.lname.label }}: {{ form.lname(size = 15, maxlength = 32) }}<br>
-            {{ form.email.label }}: {{ form.email(type="email", size = 30, maxlength = 64) }}<br>
-            {{ form.dob.label }}: {{ form.dob(type="date", size = 8, maxlength = 8) }}<br>
-            
-            {{ form.password.label }}: {{ form.password(type="password") }}<br>
-            {{ form.password2.label }}: {{ form.password2(type="password") }}<br>
             {{ form.submit() }}
+        </form> -->
+        <h1> Roommate Preferences </h1>
+        <form method="POST">
+            {{ form.profilePicture.label }} : {{ form.profilePicture() }}
+            {{ form.location.label }} : {{ form.location() }}
         </form>
     </body>
 </html>

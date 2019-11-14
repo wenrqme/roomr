@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <!-- Head defines content type and any needed CSS-->
+    <body>
+        <p>
+            Dear {{ user.fname }} {{ user.lname }},
+            Welcome to roomr. Please click the link below to confirm your account.
+            {{ url_for("confirm", token = token, _external=True) }}
+        </p>
+    <body>
+</html>
