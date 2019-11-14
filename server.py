@@ -189,27 +189,27 @@ def editProfile():
 """ 
 email authentication
 """
-subject = "roomr Account Confirmation"
-sender = "roomr@mailinator.com"
-recipient = "asiegle@u.rochester.edu"
+# subject = "roomr Account Confirmation"
+# sender = "roomr@mailinator.com"
+# recipient = "asiegle@u.rochester.edu"
 
 
-#create the Message
-msg = MIMEMultipart("alternative")
-msg["Subject"] = subject
-msg["From"] = sender
-msg["To"] = recipient
+# #create the Message
+# msg = MIMEMultipart("alternative")
+# msg["Subject"] = subject
+# msg["From"] = sender
+# msg["To"] = recipient
 
-#Record the MIME types of both parts - text/plain and text/html
-part1 = MIMEText("hiHi", "plain")
-part2 = MIMEText("email_Auth.html", "html")
+# #Record the MIME types of both parts - text/plain and text/html
+# part1 = MIMEText("hiHi", "plain")
+# part2 = MIMEText("email_Auth.html", "html")
 
-#Send Message
-context = ssl.create_default_context()
-server, port = "127.0.0.1", 25
-with smtplib.SMTP_SSL(server, port, context=context) as s:
-    s.login(sender, "123") # this line makes it password restricted
-    s.sendmail(sender, recipient, msg.as_string())
+# #Send Message
+# context = ssl.create_default_context()
+# server, port = "127.0.0.1", 25
+# with smtplib.SMTP_SSL(server, port, context=context) as s:
+#     s.login(sender, "123") # this line makes it password restricted
+#     s.sendmail(sender, recipient, msg.as_string())
 
 
 if __name__ == "__main__": 
