@@ -8,6 +8,8 @@
        
         {% if current_user.is_authenticated %}
            <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
+        <p> Email address: {{ current_user.email }}</p>
+           <p>Date of Birth: {{ current_user.dob }}</p>
         {% endif %}
         
         <p>hiHi</p>
