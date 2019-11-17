@@ -164,9 +164,9 @@ def signup():
     return render_template("signup.html", form=form)
 
 
-@app.route("/user/<string:uid>", methods=["GET"])
+@app.route("/user", methods=["GET"])
 @login_required
-def user(uid):
+def user():
     return render_template("user.html")
 
 
