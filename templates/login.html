@@ -6,9 +6,18 @@
     </head>
     <body>
         <h1> Login </h1>
+        {% for message in get_flashed_messages() %} 
+        <div class="alert">
+            <!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+            {{ message }}
+        </div>
+        {% endfor %}
         <form method="POST">
             {{ form.hidden_tag() }}
-            {{ form.email.label }}: {{ form.email() }}<br>
+            {{ form.email.label }}: {{ form.email(type="email") }}<br>
+            {% for error in form.email.errors %}
+            <span class = "error"></span>[{{ error}}]</span>
+            {% endfor %}
             {{ form.password.label }}: {{ form.password() }}<br>
             {{ form.remember_me.label }}:<br> {{ form.remember_me() }}
             {{ form.submit() }}

@@ -43,3 +43,13 @@ th {
 td {
     padding: 5px;
 }
+
+.error{
+    color: red;
+    font-weight: bold;
+}
+
+.alert{
+    color: orange;
+    font-weight: bold;
+}

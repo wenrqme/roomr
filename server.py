@@ -79,7 +79,7 @@ db.create_all()
 # Login and Signup
 
 # """
-
+#add error notes on HTML template
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
@@ -89,7 +89,8 @@ class LoginForm(FlaskForm):
 class SignupForm(FlaskForm):
     fname = StringField("First Name", validators=[DataRequired()])
     lname = StringField("Last Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
+    email = StringField("Email", validators=[DataRequired(), Email(), EqualTo('email2', message='Emails must match')])
+    email2 = StringField("Confirm Email", validators=[DataRequired(), Email()])
     dob = DateField("Date of Birth", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
@@ -109,10 +110,6 @@ class ProfileForm(FlaskForm):
     
     genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     
-    
-
-
-
 
 
 @app.route('/', methods=["GET"])
@@ -158,7 +155,7 @@ def signup():
         db.session.commit()
         print("form validated and submitted!")
         return render_template('signupresp.html', user=user)
-    else: 
+    elif request.method=="POST": 
         print("not validated")
         flash('Some information is incorrect')
     return render_template("signup.html", form=form)
