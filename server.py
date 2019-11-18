@@ -106,7 +106,7 @@ class ProfileForm(FlaskForm):
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
-    sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validartors=[DataRequired()])
+    sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
     
     genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     
@@ -181,7 +181,8 @@ def confirm(token):
 @app.route("/user/edit")
 @login_required
 def editProfile():
-    return render_template("edit_profile.html")
+    form = ProfileForm()
+    return render_template("edit_profile.html", form=form)
 
 """ 
 email authentication

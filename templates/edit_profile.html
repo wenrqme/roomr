@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Edit profile </title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
+        <title> roomr - edit profile </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
     </head>
     <body>
-        <!-- <h1> Account Info </h1>
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.fname.label }}: {{ form.fname(size = 15, maxlength = 32) }}<br>
-            {{ form.lname.label }}: {{ form.lname(size = 15, maxlength = 32) }}<br>
-            {{ form.submit() }}
-        </form> -->
-        <h1> Roommate Preferences </h1>
-        <form method="POST">
-            {{ form.profilePicture.label }} : {{ form.profilePicture() }}
-            {{ form.location.label }} : {{ form.location() }}
-        </form>
+        <nav id="sidebar"><br>
+            <div id="headercontainer">
+                <h3 id="bartitle"><b>roomr</b></h3>
+            </div>
+            <div id="barlinks">
+                <a href="{{url_for('home')}}" id="baritem">Home</a> 
+                <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                {% if current_user.is_authenticated %}
+                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                {% else %}
+                    <a href="{{url_for('login')}}" id="baritem">Login</a> 
+                    <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
+                {%endif%}   
+            </div>
+        </nav>
+    
+        <div class="content">
+            <!-- <h1> Account Info </h1>
+            <form method="POST">
+ 
+            </form> -->
+            <h1> Roommate Preferences </h1>
+            <form method="POST">
+                {{ form.profilePicture.label }} : {{ form.profilePicture() }}
+                {{ form.location.label }} : {{ form.location() }}
+            </form>
+
+
+        </div>
     </body>
 </html>

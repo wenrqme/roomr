@@ -14,7 +14,7 @@ body {
 .content {
 	margin-left:340px;
 	margin-right:40px;
-	/*transition:margin-left .4s;*/
+	/* transition:margin-left .4s; */
 }
 
 #sidebar{
@@ -61,7 +61,7 @@ body {
 #baritem {
 	text-align:left;
 	width:100%;
-	display:inline-block;
+	/* display:inline-block; */
 	float:left;
 	border:none;
 	outline:0;
