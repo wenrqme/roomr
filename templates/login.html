@@ -14,8 +14,12 @@
             <div id="barlinks">
                 <a href="/" id="baritem">Home</a> 
                 <a href="user" id="baritem" >Profile</a> 
-                <a href="login" id="baritem">Login</a> 
-                <a href="signup" id="baritem" >Signup</a> 
+                {% if current_user.is_authenticated %}
+                    <a href="logout" id="baritem" >Logout</a> 
+                {% else %}
+                    <a href="login" id="baritem">Login</a> 
+                    <a href="signup" id="baritem" >Signup</a> 
+                {%endif%}   
             </div>
         </nav>
 
