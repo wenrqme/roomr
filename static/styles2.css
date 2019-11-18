@@ -1,0 +1,93 @@
+
+/*Based on CSS from https://www.w3schools.com/w3css/tryw3css_templates_interior_design.htm */
+
+body,h1,h2,h3,h4,h5 {
+	font-family: "Poppins", sans-serif;
+	/*font-family: Helvetica, Arial, sans-serif;*/
+
+}
+body {
+	font-size:16px;
+	margin:0;
+}
+
+.content {
+	margin-left:340px;
+	margin-right:40px;
+	/*transition:margin-left .4s;*/
+}
+
+#sidebar{
+	height:100%;
+	width:200px;
+	background-color:#fff;
+	position:fixed!important;
+	z-index:1;
+	overflow:auto;
+	z-index:3;
+	font-weight:bold;
+	color:#fff!important;
+	background-color:#607d8b!important;
+	top:0;
+	font-size:18px!important;
+	padding:8px 16px!important;
+}
+
+#headercontainer:after,#headercontainer:before {
+	content:"";
+	display:table;
+	clear:both;
+	padding:0.01em 16px;
+}
+
+#bartitle{
+	text-align:center;
+	padding-top:64px!important;
+	padding-bottom:64px!important;
+}
+
+#barlinks {
+	width:100%;
+	min-width:100%;
+	text-align:left;
+	display:block;
+	padding:8px 16px;
+	border:none;
+	white-space:normal;
+	float:none;
+	outline:0;
+}
+
+#baritem {
+	text-align:left;
+	width:100%;
+	display:inline-block;
+	float:left;
+	border:none;
+	outline:0;
+	padding:8px 16px;
+	vertical-align:middle;
+	overflow:hidden;
+	text-decoration:none;
+	color:inherit;
+	background-color:inherit;
+	cursor:pointer;
+	white-space:nowrap;
+}
+
+#baritem:hover {
+	color:#000!important;
+	background-color:#ccc!important;
+}
+
+.error{
+    color: red;
+    font-weight: bold;
+}
+
+.alert{
+    color: orange;
+    font-weight: bold;
+}
+
+

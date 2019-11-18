@@ -2,25 +2,42 @@
 <html>
     <head>
         <title> roomr login </title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+
     </head>
     <body>
-        <h1> Login </h1>
-        {% for message in get_flashed_messages() %} 
-        <div class="alert">
-            <!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
-            {{ message }}
-        </div>
-        {% endfor %}
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.email.label }}: {{ form.email(type="email") }}<br>
-            {% for error in form.email.errors %}
-            <span class = "error"></span>[{{ error}}]</span>
+        <nav id="sidebar"><br>
+            <div id="headercontainer">
+                <h3 id="bartitle"><b>roomr</b></h3>
+            </div>
+            <div id="barlinks">
+                <a href="/" id="baritem">Home</a> 
+                <a href="user" id="baritem" >Profile</a> 
+                <a href="login" id="baritem">Login</a> 
+                <a href="signup" id="baritem" >Signup</a> 
+            </div>
+        </nav>
+
+
+        <div class="content" >
+            <h1> Login </h1>
+            {% for message in get_flashed_messages() %} 
+            <div class="alert">
+                <!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+                {{ message }}
+            </div>
             {% endfor %}
-            {{ form.password.label }}: {{ form.password() }}<br>
-            {{ form.remember_me.label }}:<br> {{ form.remember_me() }}
-            {{ form.submit() }}
-        </form>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.email.label }}: {{ form.email(type="email") }}<br>
+                {% for error in form.email.errors %}
+                <span class = "error"></span>[{{ error}}]</span>
+                {% endfor %}
+                {{ form.password.label }}: {{ form.password() }}<br>
+                {{ form.remember_me.label }}:<br> {{ form.remember_me() }}
+                {{ form.submit() }}
+            </form>
+        </div>
     </body>
 </html>

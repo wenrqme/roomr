@@ -2,23 +2,39 @@
 <html>
     <head>
         <title> Hello, roomr User! </title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+
     </head> 
     <body>
+        <nav id="sidebar"><br>
+            <div id="headercontainer">
+                <h3 id="bartitle"><b>roomr</b></h3>
+            </div>
+            <div id="barlinks">
+                <a href="/" id="baritem">Home</a> 
+                <a href="user" id="baritem" >Profile</a> 
+                <a href="login" id="baritem">Login</a> 
+                <a href="signup" id="baritem" >Signup</a> 
+            </div>
+        </nav>
+    
+    
+        <div class="content" >
        
-        {% if current_user.is_authenticated %}
-           <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
-        <p> Email address: {{ current_user.email }}</p>
-           <p>Date of Birth: {{ current_user.dob }}</p>
-        {% endif %}
-        
-        <p>hiHi</p>
+            {% if current_user.is_authenticated %}
+            <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
+            <p> Email address: {{ current_user.email }}</p>
+            <p>Date of Birth: {{ current_user.dob }}</p>
+            {% endif %}
+            
+            <p>hiHi</p>
 
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('logout') }}"> <button type="button"> Log Out </button> </a>
-        {% else %}
-        <a href="{{ url_for('login') }}"> <button type="button"> Log In </button> </a>
-        {% endif %}
-
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}"> <button type="button"> Log Out </button> </a>
+            {% else %}
+            <a href="{{ url_for('login') }}"> <button type="button"> Log In </button> </a>
+            {% endif %}
+        </div>
     </body>
     </html>
