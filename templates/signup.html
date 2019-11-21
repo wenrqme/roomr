@@ -13,8 +13,8 @@
             </div>
             <div id="barlinks">
                     <a href="{{url_for('home')}}" id="baritem">Home</a> 
-                    <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                     {% if current_user.is_authenticated %}
+                        <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                         <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                         <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
                     {% else %}
@@ -50,6 +50,16 @@
                     <span class = "error">{{ error}}</span>
                 {% endfor %}
                 <br>
+                <br>
+                {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
+                {{ form.location.label }} : {{ form.location() }} <br>
+                {{ form.gender.label }} : {{ form.gender() }} <br>
+                {{ form.bio.label }} : {{ form.bio() }} <br>
+                {{ form.smoker.label }} : {{ form.smoker() }} <br>
+                {{ form.sleepPattern.label }} : {{ form.sleepPattern() }} <br>
+                {{ form.genderPreferences.label }} : {{ form.genderPreferences() }} <br>
+                <br>
+
                 {{ form.submit() }}
             </form>
         </div>

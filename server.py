@@ -6,12 +6,12 @@ from datetime import datetime
 import base64
 # import bcrypt 
 from hashlib import sha512
-from werkzeug import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 # from cryptography.fernet import Ferne
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DateField, PasswordField, BooleanField, FileField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Email, ValidationError, EqualTo
-from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
+from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, current_user
 import ssl
 import smtplib
 from email.mime.text import MIMEText
@@ -55,7 +55,13 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     confirmed = db.Column(db.Boolean(), default=False)
 
-    
+    location = db.Column(db.String(32), index=True, nullable=False)
+    gender = db.Column(db.String(6), index=True, nullable=False)
+    bio = db.Column(db.String(500), index=True, nullable=True)
+    smoker = db.Column(db.String(3), index=True, nullable=False)
+    sleep = db.Column(db.String(5), index=True, nullable=False)
+    genderPreferences = db.Column(db.String(3), index=True, nullable=False)
+
     @property
     def password(self):
         raise AttributeError("password is write only")
@@ -70,6 +76,8 @@ class User(UserMixin, db.Model):
     def generate_confirmation_token(self, expiration=3600):
         s = Serializer(app.config["Secret_Key"], expiration)
         return s.dumps({"confirm": self.id}).decode("utf-8")
+
+    
 
 db.create_all()
 
@@ -94,6 +102,15 @@ class SignupForm(FlaskForm):
     dob = DateField("Date of Birth", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
+
+    profilePicture = FileField("Profile Picture")
+    location = StringField("Location", validators=[DataRequired()])
+    gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
+    bio = TextAreaField("Bio", validators=[DataRequired()])
+    smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
+    sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
+    genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
+    
     submit = SubmitField("Submit")
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -109,8 +126,30 @@ class ProfileForm(FlaskForm):
     sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
     
     genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
-    
+    submit = SubmitField("Submit")
 
+@app.route("/user/edit", methods=["GET","POST"])
+@login_required
+def editProfile():
+    profilePicture, location, gender, bio, smoker, sleepPattern, genderPreferences = None, None, None, None, None, None, None
+    form = ProfileForm()
+    user = current_user
+    if form.validate_on_submit:
+        user.profilePicture = form.profilePicture.data
+        user.location = form.location.data
+        user.gender = form.gender.data
+        user.bio = form.bio.data
+        user.smoker = form.smoker.data
+        user.sleepPattern = form.sleepPattern.data
+        user.genderPreferences = form.genderPreferences.data
+        db.session.add(user)
+        db.session.commit()
+        print("form validated and submitted!")
+        return render_template('user.html', user=user)
+    elif request.method=="POST": 
+        print("not validated")
+        flash('Some information is incorrect')
+    return render_template("edit_profile.html", form=form)
 
 @app.route('/', methods=["GET"])
 def home():
@@ -150,7 +189,18 @@ def signup():
         email = form.email.data
         dob = form.dob.data
         userPassword = form.password.data
-        user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword)
+
+        profilePicture = form.profilePicture.data
+        location = form.location.data
+        gender = form.gender.data
+        bio = form.bio.data
+        smoker = form.smoker.data
+        sleepPattern = form.sleepPattern.data
+        genderPreferences = form.genderPreferences.data
+        
+        user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, \
+            location=location, gender=gender, \
+            bio = bio, smoker=smoker, sleep=sleepPattern, genderPreferences = genderPreferences)
         db.session.add(user)
         db.session.commit()
         print("form validated and submitted!")
@@ -159,6 +209,12 @@ def signup():
         print("not validated")
         flash('Some information is incorrect')
     return render_template("signup.html", form=form)
+
+
+""" 
+email authentication
+"""
+# subject = "roomr Account Confirmation"
 
 
 @app.route("/user", methods=["GET"])
@@ -178,11 +234,7 @@ def confirm(token):
         flash("Your confirmation link is invalid or has expired")
     return redirect(url_for("home"))
 
-@app.route("/user/edit")
-@login_required
-def editProfile():
-    form = ProfileForm()
-    return render_template("edit_profile.html", form=form)
+
 
 """ 
 email authentication
@@ -210,5 +262,6 @@ email authentication
 #     s.sendmail(sender, recipient, msg.as_string())
 
 
-if __name__ == "__main__": 
-    app.run()
+if __name__ == '__main__':
+    # app.run()
+    app.run(host='127.0.0.1', port=8080, debug=True)

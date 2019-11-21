@@ -7,32 +7,32 @@
 
 </head>
 <body>
+    <!-- Sidebar content -->
     <nav id="sidebar"><br>
         <div id="headercontainer">
             <h3 id="bartitle"><b>roomr</b></h3>
         </div>
         <div id="barlinks">
                 <a href="{{url_for('home')}}" id="baritem">Home</a> 
-                <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                 {% if current_user.is_authenticated %}
+                    <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                     <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
-                    <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                    <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
                 {% else %}
-                    <a href="{{url_for('login')}}" id="baritem">Login</a> 
-                    <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
-                {%endif%}   
+                    <a href="{{url_for('login')}}" id="baritem">Login</a>
+                    <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
+                {% endif %}   
             </div>
     </nav>
 
-
+    <!-- Homepage content -->
     <div class="content" >
-
-
         <h1> welcome to roomr. </h1>
-        <p> *homepage feed here* </p>
-        <!-- <a href="login"> Login </a>
-        <br>
-        <a href="signup"> Sign Up </a> -->
+        {% if current_user.is_authenticated %}
+            <p> *homepage feed here* </p>
+        {% else %}
+            <p> New user? Sign up now! </p>
+        {% endif %}
     </div>
 
 </body>

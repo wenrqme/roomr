@@ -7,6 +7,7 @@
 
     </head> 
     <body>
+        <!-- Sidebar content -->
         <nav id="sidebar"><br>
             <div id="headercontainer">
                 <h3 id="bartitle"><b>roomr</b></h3>
@@ -26,11 +27,14 @@
     
     
         <div class="content" >
-       
+            
             {% if current_user.is_authenticated %}
             <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
             <p> Email address: {{ current_user.email }}</p>
             <p>Date of Birth: {{ current_user.dob }}</p>
+            <div>
+                <!-- <img src= "{{ current_user.profilepicture }}" alt = "Profile picture"> -->
+            </div>
             {% endif %}
             
             <p>hiHi</p>
