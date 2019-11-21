@@ -30,6 +30,7 @@
         <h1> welcome to roomr. </h1>
         {% if current_user.is_authenticated %}
             <p> *homepage feed here* </p>
+            <p> {{users}}</p>
         {% else %}
             <p> New user? Sign up now! </p>
         {% endif %}

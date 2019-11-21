@@ -1,6 +1,7 @@
 import os
-from flask import Flask, url_for, flash, render_template, redirect, request
+from flask import Flask, url_for, flash, render_template, redirect, request, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 import datetime 
 from datetime import datetime
 import base64
@@ -17,6 +18,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 
 
 app = Flask(__name__)
@@ -24,14 +26,15 @@ app.config["SECRET_KEY"] = "oEHYBreJ2QSefBdUhD19PkxC"
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
+socketio = SocketIO(app)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# 
-# Database Stuff
-#
+"""
+Database Stuff
+"""
 appdir = os.path.abspath(os.path.dirname(__file__))
 
 app.config["SQLALCHEMY_DATABASE_URI"] = \
@@ -41,10 +44,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
-
-# """
-# User Class & Password Hashing
-# """
+"""
+User Class & Password Hashing
+"""
 class User(UserMixin, db.Model):
     __tablename__ = "Users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -62,6 +64,7 @@ class User(UserMixin, db.Model):
     smoker = db.Column(db.String(3), index=True, nullable=False)
     sleep = db.Column(db.String(5), index=True, nullable=False)
     genderPreferences = db.Column(db.String(3), index=True, nullable=False)
+    cleanliness = db.Column(db.String(5), index = True, nullable = False)
 
     @property
     def password(self):
@@ -84,10 +87,9 @@ db.create_all()
 
 
 
-# """
-# Login and Signup
-
-# """
+"""
+Login and Signup
+"""
 #add error notes on HTML template
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
@@ -110,7 +112,8 @@ class SignupForm(FlaskForm):
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
     sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
-    genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
+    cleanliness = SelectField("Cleanliness", choices=[('messy', 'Messy'),('average', 'Average'), ('clean', 'Clean')], validators=[DataRequired()])
+    genderPreferences = SelectField("Gender Preference", choices=[('male', 'Male Only'), ('female', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     
     submit = SubmitField("Submit")
     def validate_email(self, email):
@@ -125,64 +128,31 @@ class ProfileForm(FlaskForm):
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
     sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
+    cleanliness = SelectField("Cleanliness", choices=[('messy', 'Messy'),('average', 'Average'), ('clean', 'Clean')], validators=[DataRequired()])
     
-    genderPreferences = SelectField("Gender Preference", choices=[('mo', 'Male Only'), ('fo', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
+    genderPreferences = SelectField("Gender Preference", choices=[('male', 'Male Only'), ('female', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     submit = SubmitField("Submit")
 
-@app.route("/user/edit", methods=["GET","POST"])
-@login_required
-def editProfile():
-    profilePicture, location, gender, bio, smoker, sleepPattern, genderPreferences = None, None, None, None, None, None, None
-    user = current_user
+#temporary chat form
+class ChatForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    room = StringField('Room', validators=[DataRequired()])
+    submit = SubmitField('Enter Chatroom')
 
-    prefill = {'profilePicture': str(user.profilePicture), 'location': str(user.location), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'genderPreferences':str(user.genderPreferences)}
-    form = ProfileForm(data=prefill)
-
-    if form.validate_on_submit and request.method=="POST":
-        user.profilePicture = form.profilePicture.data
-        user.location = form.location.data
-        user.gender = form.gender.data
-        user.bio = form.bio.data
-        user.smoker = form.smoker.data
-        user.sleep = form.sleepPattern.data
-        user.genderPreferences = form.genderPreferences.data
-        db.session.add(user)
-        db.session.commit()
-        print("form validated and submitted!")
-        flash('Profile updated! :)')
-        return render_template('edit_profile.html', form=form)
-    elif request.method=="POST": 
-        print("not validated")
-        flash('Some information is incorrect')
-    return render_template("edit_profile.html", form=form)
-
+"""
+roomr pages
+"""
+#home page
 @app.route('/', methods=["GET"])
 def home():
-    return render_template("home.html")
+    if current_user.is_authenticated == True:
+        users = match()
+        return render_template("home.html", users = users)
+    else:
+        return render_template("home.html")
     #need links to login or create an account
 
-@app.route("/login", methods=["GET","POST"])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        print("is validated")
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is not None and user.verify_password(form.password.data):
-            login_user(user, form.remember_me.data)
-            next = request.args.get("next")
-            if next is None or not next.startswith("/"):
-                next = url_for("user")
-            return redirect(next)
-        flash("Invalid Username or password.")
-    return render_template("login.html", form=form)
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    flash("you have been logged out")
-    return redirect(url_for("login"))
-
+#sign-up page
 @app.route("/signup", methods=["GET","POST"])
 def signup():
     fname, lname, email, dob, password = None, None, None, None, None
@@ -202,9 +172,10 @@ def signup():
         smoker = form.smoker.data
         sleepPattern = form.sleepPattern.data
         genderPreferences = form.genderPreferences.data
+        cleanliness = form.cleanliness.data
         
-        user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, \
-            location=location, gender=gender, \
+        user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, profilePicture = profilePicture, \
+            location=location, cleanliness=cleanliness, gender=gender, \
             bio = bio, smoker=smoker, sleep=sleepPattern, genderPreferences = genderPreferences)
         db.session.add(user)
         db.session.commit()
@@ -215,18 +186,95 @@ def signup():
         flash('Some information is incorrect')
     return render_template("signup.html", form=form)
 
+#login page
+@app.route("/login", methods=["GET","POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        print("is validated")
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None and user.verify_password(form.password.data):
+            login_user(user, form.remember_me.data)
+            next = request.args.get("next")
+            if next is None or not next.startswith("/"):
+                next = url_for("user")
+            return redirect(next)
+        flash("Invalid Username or password.")
+    return render_template("login.html", form=form)
 
-""" 
-email authentication
-"""
-# subject = "roomr Account Confirmation"
+#logout
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("you have been logged out")
+    return redirect(url_for("login"))
 
+#edit profile page
+@app.route("/user/edit", methods=["GET","POST"])
+@login_required
+def editProfile():
+    profilePicture, location, gender, bio, smoker, sleepPattern, cleanliness, genderPreferences = None, None, None, None, None, None, None, None
+    user = current_user
+
+    prefill = {'profilePicture': str(user.profilePicture), 'location': str(user.location), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
+    form = ProfileForm(data=prefill)
+
+    if form.validate_on_submit and request.method=="POST":
+        user.profilePicture = form.profilePicture.data
+        user.location = form.location.data
+        user.gender = form.gender.data
+        user.bio = form.bio.data
+        user.smoker = form.smoker.data
+        user.sleep = form.sleepPattern.data
+        user.cleanliness = form.cleanliness.data
+        user.genderPreferences = form.genderPreferences.data
+        db.session.add(user)
+        db.session.commit()
+        print("form validated and submitted!")
+        flash('Profile updated! :)')
+        return render_template('edit_profile.html', form=form)
+    elif request.method=="POST": 
+        print("not validated")
+        flash('Some information is incorrect')
+    return render_template("edit_profile.html", form=form)
+
+#viewing another user's profile page
+@app.route("/user/view/<email>", methods=["GET"])
+@login_required
+def viewProfile(email):
+    other_user = User.query.filter_by(email=email).first()
+    if current_user.email == other_user.email: 
+        return render_template("user.html")
+    return render_template("view_user.html", other_user=other_user)
 
 @app.route("/user", methods=["GET"])
 @login_required
 def user():
     return render_template("user.html")
 
+@app.route('/chat')
+def chat():
+    """Chat room. The user's name and room must be stored in
+    the session."""
+    name = session.get('name', '')
+    room = session.get('room', '')
+    if name == '' or room == '':
+        return redirect(url_for('.index'))
+    return render_template('chat.html', name=name, room=room)
+
+@app.route('/chatform', methods=["GET", "POST"])
+def chatform():
+    """Login form to enter a room."""
+    form = ChatForm()
+    if form.validate_on_submit():
+        session['name'] = form.name.data
+        session['room'] = form.room.data
+        return redirect(url_for('.chat'))
+    elif request.method == 'GET':
+        form.name.data = session.get('name', '')
+        form.room.data = session.get('room', '')
+    return render_template('chatform.html', form=form)
 
 @app.route("/confirm/<string:token>")
 @login_required
@@ -240,6 +288,21 @@ def confirm(token):
     return redirect(url_for("home"))
 
 
+def match():
+    # gender
+    users = None
+    if current_user.genderPreferences == "any":
+        # users = User.query.filter_by(genderPreferences=current_user.gender | genderPreferences='any').all()
+        users = User.query.filter(or_(User.genderPreferences==current_user.gender, User.genderPreferences=='any')).all()
+    elif current_user.genderPreferences == "male":
+        users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any")).all()
+    elif current_user.genderPreferences == "female":
+        users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any")).all()
+   
+    return users
+
+    # print(users)
+    
 
 """ 
 email authentication
@@ -266,7 +329,36 @@ email authentication
 #     s.login(sender, "123") # this line makes it password restricted
 #     s.sendmail(sender, recipient, msg.as_string())
 
+""" 
+chat functionality
+"""
+@socketio.on('joined', namespace='/chat')
+def joined(message):
+    """Sent by clients when they enter a room.
+    A status message is broadcast to all people in the room."""
+    room = session.get('room')
+    join_room(room)
+    emit('status', {'msg': session.get('name') + ' has entered the room.'}, room=room)
 
+@socketio.on('text', namespace='/chat')
+def text(message):
+    """Sent by a client when the user entered a new message.
+    The message is sent to all people in the room."""
+    room = session.get('room')
+    emit('message', {'msg': session.get('name') + ':' + message['msg']}, room=room)
+
+@socketio.on('left', namespace='/chat')
+def left(message):
+    """Sent by clients when they leave a room.
+    A status message is broadcast to all people in the room."""
+    room = session.get('room')
+    leave_room(room)
+    emit('status', {'msg': session.get('name') + ' has left the room.'}, room=room)
+
+""" 
+running the app
+"""
 if __name__ == '__main__':
     # app.run()
     app.run(host='127.0.0.1', port=8080, debug=True)
+    socketio.run(app)

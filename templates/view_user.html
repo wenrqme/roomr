@@ -4,6 +4,7 @@
         <title> roomr - profile </title>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+
     </head> 
     <body>
         <!-- Sidebar content -->
@@ -13,8 +14,8 @@
             </div>
             <div id="barlinks">
                     <a href="{{url_for('home')}}" id="baritem">Home</a> 
-                    <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                     {% if current_user.is_authenticated %}
+                        <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                         <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                         <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
                     {% else %}
@@ -24,26 +25,25 @@
                 </div>
         </nav>
     
-    
         <div class="content" >
             
             {% if current_user.is_authenticated %}
-            <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
-            <p> Email address: {{ current_user.email }}</p>
-            <p>Date of Birth: {{ current_user.dob }}</p>
-        
-            <div>
-             <img src= "{{ current_user.profilePicture }}" alt = "Profile picture">
-            </div>
-            {% endif %}
-            
-            <p>hiHi</p>
-
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('logout') }}"> <button type="button"> Log Out </button> </a>
+                <h1> {{ other_user.fname|capitalize }} {{ other_user.lname|capitalize }} </h1>
+                <p> <b>Email address:</b> {{ other_user.email }}</p>
+                <p> <b>Date of Birth:</b> {{ other_user.dob }}</p>
+                <p> <b>Location:</b> {{ other_user.location }} </p>
+                <p> <b>Gender:</b> {{ other_user.gender }}</p>
+                <p> <b>Bio:</b> {{ other_user.bio }}</p>
+                <p> <b>Smoker:</b> {{ other_user.smoker }} </p>
+                <p> <b>Sleep Pattern:</b> {{ other_user.sleep }} </p>
+                <p> <b>Gender Preference:</b> {{ other_user.genderPreferences }} </p>
+                <div>
+                    <!-- <img src= "{{ current_user.profilepicture }}" alt = "Profile picture"> -->
+                </div>
             {% else %}
-            <a href="{{ url_for('login') }}"> <button type="button"> Log In </button> </a>
-            {% endif %}
+                <h1> You do not have permission to view this page. Please login. </h1>
+            {% endif %}   
+
         </div>
     </body>
-    </html>
+</html>
