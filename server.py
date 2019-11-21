@@ -1,7 +1,7 @@
 import os
 from flask import Flask, url_for, flash, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
-import datetime 
+import datetime
 from datetime import datetime
 import base64
 # import bcrypt 
@@ -29,17 +29,17 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# 
+#
 # Database Stuff
 #
+
+
 appdir = os.path.abspath(os.path.dirname(__file__))
 
-app.config["SQLALCHEMY_DATABASE_URI"] = \
-	f"sqlite:///{os.path.join(appdir, 'library.db')}"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(appdir, 'library.db')}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
-
 
 
 # """
@@ -210,5 +210,6 @@ email authentication
 #     s.sendmail(sender, recipient, msg.as_string())
 
 
-if __name__ == "__main__": 
-    app.run()
+if __name__ == '__main__':
+    # app.run()
+    app.run(host='127.0.0.1', port=8080, debug=True)
