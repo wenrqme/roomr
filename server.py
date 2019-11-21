@@ -55,6 +55,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     confirmed = db.Column(db.Boolean(), default=False)
 
+    profilePicture = db.Column(db.String(3), index=True, nullable=True)
     location = db.Column(db.String(32), index=True, nullable=False)
     gender = db.Column(db.String(6), index=True, nullable=False)
     bio = db.Column(db.String(500), index=True, nullable=True)
@@ -132,20 +133,24 @@ class ProfileForm(FlaskForm):
 @login_required
 def editProfile():
     profilePicture, location, gender, bio, smoker, sleepPattern, genderPreferences = None, None, None, None, None, None, None
-    form = ProfileForm()
     user = current_user
-    if form.validate_on_submit:
+
+    prefill = {'profilePicture': str(user.profilePicture), 'location': str(user.location), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'genderPreferences':str(user.genderPreferences)}
+    form = ProfileForm(data=prefill)
+
+    if form.validate_on_submit and request.method=="POST":
         user.profilePicture = form.profilePicture.data
         user.location = form.location.data
         user.gender = form.gender.data
         user.bio = form.bio.data
         user.smoker = form.smoker.data
-        user.sleepPattern = form.sleepPattern.data
+        user.sleep = form.sleepPattern.data
         user.genderPreferences = form.genderPreferences.data
         db.session.add(user)
         db.session.commit()
         print("form validated and submitted!")
-        return render_template('user.html', user=user)
+        flash('Profile updated! :)')
+        return render_template('edit_profile.html', form=form)
     elif request.method=="POST": 
         print("not validated")
         flash('Some information is incorrect')
