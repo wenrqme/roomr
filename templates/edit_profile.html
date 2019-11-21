@@ -29,9 +29,21 @@
  
             </form> -->
             <h1> Roommate Preferences </h1>
+            {% for message in get_flashed_messages() %} 
+            <div class="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
             <form method="POST">
-                {{ form.profilePicture.label }} : {{ form.profilePicture() }}
-                {{ form.location.label }} : {{ form.location() }}
+                {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
+                {{ form.location.label }} : {{ form.location() }} <br>
+                {{ form.gender.label }} : {{ form.gender() }} <br>
+                {{ form.bio.label }} : {{ form.bio() }} <br>
+                {{ form.smoker.label }} : {{ form.smoker() }} <br>
+                {{ form.sleepPattern.label }} : {{ form.sleepPattern() }} <br>
+                {{ form.genderPreferences.label }} : {{ form.genderPreferences() }} <br>
+                {{ form.cleanliness.label }}: {{ form.cleanliness() }}<br>
+                {{ form.submit() }}
             </form>
 
 
