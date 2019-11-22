@@ -19,8 +19,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from flask_mail import Mail, Message
 
-
+"""
+For login
+"""
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "oEHYBreJ2QSefBdUhD19PkxC"
 login_manager = LoginManager()
@@ -28,10 +31,20 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 socketio = SocketIO(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+"""
+For email authentication with Google's SMTP server
+"""
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = "roomr.confirmation@gmail.com"
+app.config["MAIL_PASSWORD"] = "roomr123$"
+mail = Mail(app)
 
 """
 Database Stuff
@@ -42,6 +55,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(appdir, 'libra
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+
 
 
 
@@ -79,9 +93,21 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def generate_confirmation_token(self, expiration=3600):
-        s = Serializer(app.config["Secret_Key"], expiration)
+        s = Serializer(app.config['SECRET_KEY'], expiration)
         return s.dumps({"confirm": self.id}).decode("utf-8")
 
+    def confirm(self, token):
+        s = Serializer(app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token.encode("utf-8"))
+        except Exception:
+            return False
+        if data.get("confirm") != self.id:
+            return False
+        self.confirmed = True
+        db.session.add(self)
+        db.session.commit()
+        return True
     
 
 db.create_all()
@@ -181,6 +207,12 @@ def signup():
         db.session.add(user)
         db.session.commit()
         print("form validated and submitted!")
+        token = user.generate_confirmation_token()
+        app.config['SECRET_KEY'] = token
+        print(f"{app.config['SECRET_KEY']} is the token")
+        send_email(user.email, 'roomr Email Verification',
+                   "email_Auth.txt", user, token=token)
+        print("email sent!")
         return render_template('signupresp.html', user=user)
     elif request.method=="POST": 
         print("not validated")
@@ -202,6 +234,17 @@ def login():
             return redirect(next)
         flash("Invalid Username or password.")
     return render_template("login.html", form=form)
+
+def send_email(to, subject, template, User, token):
+    me = app.config["MAIL_USERNAME"]
+    to = User.email
+    msg = Message(subject, sender=app.config["MAIL_USERNAME"], recipients=[
+                  to])
+    with open(os.getcwd() + "\\templates\\" + template) as f:
+        msg.body = f.read()
+    url = url_for('confirm', token=token)
+    msg.body += 'http://127.0.0.1:8080' + url
+    mail.send(msg)
 
 #logout
 @app.route("/logout")
@@ -283,6 +326,7 @@ def confirm(token):
     if current_user.confirmed:
         password
     elif current_user.confirm(token):
+        db.session.commit()
         flash("Thank you for confirming your account.")
     else:
         flash("Your confirmation link is invalid or has expired")
