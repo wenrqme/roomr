@@ -18,6 +18,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
+
+
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask_mail import Mail, Message
 
@@ -30,6 +33,8 @@ login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
 socketio = SocketIO(app)
+
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 
 @login_manager.user_loader
@@ -93,16 +98,22 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def generate_confirmation_token(self, expiration=3600):
-        s = Serializer(app.config['SECRET_KEY'], expiration)
-        return s.dumps({"confirm": self.id}).decode("utf-8")
+        # s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        return s.dumps([str(self.id)])
+        # return s.dumps({"confirm": self.id})
 
     def confirm(self, token):
-        s = Serializer(app.config["SECRET_KEY"])
+        # s = URLSafeTimedSerializer(app.config["SECRET_KEY"])
         try:
-            data = s.loads(token.encode("utf-8"))
-        except Exception:
+            # print(token)
+            data = s.loads(token, max_age=3600)
+        except Exception as e:
+            print(e)
+            # print(e.payload)
             return False
-        if data.get("confirm") != self.id:
+        # if data.get("confirm") != self.id:
+        if str(data[0]) != str(self.id):
+            # print(f"!=, {data[0]}, {self.id} ")
             return False
         self.confirmed = True
         db.session.add(self)
@@ -240,10 +251,12 @@ def send_email(to, subject, template, User, token):
     to = User.email
     msg = Message(subject, sender=app.config["MAIL_USERNAME"], recipients=[
                   to])
-    with open(os.getcwd() + "\\templates\\" + template) as f:
+    # with open(os.getcwd() + "\\templates\\" + template) as f:
+    with open(os.getcwd() + "/templates/" + template) as f:
         msg.body = f.read()
-    url = url_for('confirm', token=token)
-    msg.body += 'http://127.0.0.1:8080' + url
+    # url = url_for('confirm', token=token)
+    # msg.body += 'http://127.0.0.1:8080' + url
+    msg.body += url_for('confirm', token=token, _external=True)
     mail.send(msg)
 
 #logout
@@ -324,8 +337,13 @@ def chatform():
 @login_required
 def confirm(token):
     if current_user.confirmed:
-        password
+        print("already confirmed")
+        # password
     elif current_user.confirm(token):
+        print("confirming...")
+        # user = current_user
+        # user.confirmed = True
+        # db.session.add(user)
         db.session.commit()
         flash("Thank you for confirming your account.")
     else:

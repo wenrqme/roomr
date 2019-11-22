@@ -9,3 +9,4 @@ SQLAlchemy==1.3.10
 email-to==0.1.0
 gunicorn==19.5.0
 flask-socketio==4.2.1
+flask_mail==0.9.1
