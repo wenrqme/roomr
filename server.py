@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DateField, PasswordField, BooleanField, FileField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Email, ValidationError, EqualTo
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, current_user
 import ssl
 import smtplib
@@ -19,10 +20,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer
-
+from werkzeug.utils import secure_filename
 
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask_mail import Mail, Message
+from flask_uploads import UploadSet, IMAGES 
 
 """
 For login
@@ -76,8 +78,8 @@ class User(UserMixin, db.Model):
     dob = db.Column(db.DateTime, index=True,nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     confirmed = db.Column(db.Boolean(), default=False)
-
-    profilePicture = db.Column(db.String(3), index=True, nullable=True)
+    
+    profilePicture = db.Column(db.LargeBinary, nullable=True)
     location = db.Column(db.String(32), index=True, nullable=False)
     gender = db.Column(db.String(6), index=True, nullable=False)
     bio = db.Column(db.String(500), index=True, nullable=True)
@@ -128,6 +130,7 @@ db.create_all()
 """
 Login and Signup
 """
+images = UploadSet('images', IMAGES)
 #add error notes on HTML template
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
@@ -144,7 +147,7 @@ class SignupForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
 
-    profilePicture = FileField("Profile Picture")
+    profilePicture = FileField("Profile Picture", validators=[FileAllowed(images, 'Images only!')])
     location = StringField("Location", validators=[DataRequired()])
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
@@ -160,7 +163,7 @@ class SignupForm(FlaskForm):
             raise ValidationError("Please use a different email")
 
 class ProfileForm(FlaskForm):
-    profilePicture = FileField("Profile Picture")
+    profilePicture = FileField("Profile Picture", validators=[FileAllowed(images, 'Images only!')])
     location = StringField("Location", validators=[DataRequired()])
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
@@ -204,6 +207,7 @@ def signup():
         userPassword = form.password.data
 
         profilePicture = form.profilePicture.data
+        profilePicture.save(os.path.join(app.instance_path, 'photos', filename))
         location = form.location.data
         gender = form.gender.data
         bio = form.bio.data
