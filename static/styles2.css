@@ -90,4 +90,33 @@ body {
     font-weight: bold;
 }
 
+.profile {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	max-width: 500px;
+	margin: auto;
+	text-align: center;
+  }
+
+#bio {
+	  width: 75%;
+	  margin: auto;
+  }
+
+#quest {
+	float: left;
+}
+
+#response {
+	float: right;
+}
+
+.col1 {
+	margin: auto;
+	width: 25%;
+}
+
+.col2 {
+	margin: auto;
+	width: 40%;
+}
 

@@ -4,7 +4,7 @@ from flask import Flask, url_for, flash, render_template, redirect, request, ses
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 import datetime 
-from datetime import datetime
+from datetime import datetime, date
 import base64
 # import bcrypt 
 from hashlib import sha512
@@ -316,8 +316,8 @@ def editProfile():
             filename = images.save(form.profilePicture.data)
             file_url = images.url(filename)
             user.profilePicture = file_url
-        else:
-            user.profilePicture = url_for('static', filename="generic-profile-picture.jpg", _external=True)
+        # else:
+            # user.profilePicture = url_for('static', filename="generic-profile-picture.jpg", _external=True)
             
         user.location = form.location.data
         user.gender = form.gender.data

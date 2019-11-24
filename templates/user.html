@@ -28,24 +28,43 @@
     
     
         <div class="content" >
+            <br>
+            <br>
             
             {% if current_user.is_authenticated %}
-            <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
-            <p> Email address: {{ current_user.email }}</p>
-            <p>Date of Birth: {{ current_user.dob }}</p>
-        
-            <div>
-             <img src= "{{ current_user.profilePicture }}" alt = "Profile picture", style = "width:250px;height:250px;" >
-            </div>
-            {% endif %}
-            
-            <p>hiHi</p>
+                <div class="profile"> 
+                    <br>
+                    <img src= "{{ current_user.profilePicture }}" alt = "Profile picture", style = "width:80%" >
+                    <h1>{{ current_user.fname }} {{ current_user.lname }}</h1>
+                    <div class="col1">
+                        <span id = "quest"> {{current_user.gender.capitalize()}} </span> 
+                        <span id = "response">Age: {{ current_user.dob.today().year - current_user.dob.year }}</span>
+                        <br>
+                        <div>{{current_user.location}}</div>
+                        <br>
+                    </div>
+                    <div id="bio"> Bio: <br> {{current_user.bio}} </div>
+                    <br>
+                    <div class="col2"> 
+                        <div> <span id="quest">Smoker:</span> <span id="response">{{current_user.smoker.capitalize()}} </span></div> <br>
+                        <div> <span id="quest">Sleep Pattern:</span> <span id="response">{{current_user.sleep.capitalize()}} </span></div> <br>
+                        <div> <span id="quest">Cleanliness:</span> <span id="response">{{current_user.cleanliness.capitalize()}} </span></div> <br>
+                    </div>
+                    <br>
+                    <br>
 
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('logout') }}"> <button type="button"> Log Out </button> </a>
-            {% else %}
-            <a href="{{ url_for('login') }}"> <button type="button"> Log In </button> </a>
+                </div>
+
+
+
+                <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
+                <p> Email address: {{ current_user.email }}</p>
+                <p>Date of Birth: {{ current_user.dob }}</p>
+            
+                <div>
+                </div>
             {% endif %}
+            
         </div>
     </body>
     </html>
