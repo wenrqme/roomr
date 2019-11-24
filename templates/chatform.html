@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title> roomr - chat form </title>
@@ -16,6 +17,7 @@
                         {% if current_user.is_authenticated %}
                             <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                             <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                            <a href="{{url_for('chatform')}}" id="baritem" >Chat</a>
                         {% else %}
                             <a href="{{url_for('login')}}" id="baritem">Login</a> 
                             <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
@@ -26,7 +28,6 @@
             <h1>Login to your chatroom here!</h1>
             <form method="POST">
                 {{ form.hidden_tag() }}
-                {{ form.name.label }}: {{ form.name() }} {% for error in form.name.errors %}{{ error }}{% endfor %}<br>
                 {{ form.room.label }}: {{ form.room() }} {% for error in form.room.errors %}{{ error }}{% endfor %}<br>
                 {{ form.submit() }}
             </form>

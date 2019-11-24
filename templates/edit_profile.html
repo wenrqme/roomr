@@ -16,6 +16,7 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                    <a href="{{url_for('chatform')}}" id="baritem" >Chat</a>
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a> 
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
@@ -34,7 +35,7 @@
                 {{ message }}
             </div>
             {% endfor %}
-            <form method="POST">
+            <form method="POST"  enctype="multipart/form-data">
                 {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
                 {{ form.location.label }} : {{ form.location() }} <br>
                 {{ form.gender.label }} : {{ form.gender() }} <br>

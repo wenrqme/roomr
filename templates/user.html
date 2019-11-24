@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,6 +18,7 @@
                     {% if current_user.is_authenticated %}
                         <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                         <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                        <a href="{{url_for('chatform')}}" id="baritem" >Chat</a>
                     {% else %}
                         <a href="{{url_for('login')}}" id="baritem">Login</a> 
                         <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
@@ -33,7 +35,7 @@
             <p>Date of Birth: {{ current_user.dob }}</p>
         
             <div>
-             <img src= "{{ current_user.profilePicture }}" alt = "Profile picture">
+             <img src= "{{ current_user.profilePicture }}" alt = "Profile picture", style = "width:250px;height:250px;" >
             </div>
             {% endif %}
             

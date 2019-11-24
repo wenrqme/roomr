@@ -17,6 +17,7 @@
                         <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                         <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                         <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                        <a href="{{url_for('chatform')}}" id="baritem" >Chat</a>
                     {% else %}
                         <a href="{{url_for('login')}}" id="baritem">Login</a> 
                         <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
@@ -33,7 +34,7 @@
                 {{ message }}
             </div>
             {% endfor %}
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 {{ form.fname.label }}: {{ form.fname(size = 15, maxlength = 32) }}<br>
                 {{ form.lname.label }}: {{ form.lname(size = 15, maxlength = 32) }}<br>

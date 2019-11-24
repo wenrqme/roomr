@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, url_for, flash, render_template, redirect, request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -24,7 +25,7 @@ from werkzeug.utils import secure_filename
 
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask_mail import Mail, Message
-from flask_uploads import UploadSet, IMAGES 
+from flask_uploads import UploadSet, IMAGES , configure_uploads
 
 """
 For login
@@ -36,7 +37,12 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 socketio = SocketIO(app)
 
+
+
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+
+with app.open_resource("usaCities.json", 'r') as fin:
+    users = json.load(fin)
 
 
 @login_manager.user_loader
@@ -49,8 +55,8 @@ For email authentication with Google's SMTP server
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "roomr.confirmation@gmail.com"
-app.config["MAIL_PASSWORD"] = "roomr123$"
+app.config["MAIL_USERNAME"] = "roomr.official@gmail.com"
+app.config["MAIL_PASSWORD"] = "roomrroomr123$"
 mail = Mail(app)
 
 """
@@ -63,6 +69,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
+app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(appdir, 'profile-pictures') # you'll need to create a folder named uploads
 
 
 
@@ -79,7 +86,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     confirmed = db.Column(db.Boolean(), default=False)
     
-    profilePicture = db.Column(db.LargeBinary, nullable=True)
+    profilePicture = db.Column(db.String(64), nullable=True)
     location = db.Column(db.String(32), index=True, nullable=False)
     gender = db.Column(db.String(6), index=True, nullable=False)
     bio = db.Column(db.String(500), index=True, nullable=True)
@@ -130,7 +137,9 @@ db.create_all()
 """
 Login and Signup
 """
-images = UploadSet('images', IMAGES)
+images = UploadSet('images', IMAGES, default_dest=lambda app: "profile-pictures")
+configure_uploads(app, images)
+
 #add error notes on HTML template
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
@@ -154,6 +163,9 @@ class SignupForm(FlaskForm):
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
     sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
     cleanliness = SelectField("Cleanliness", choices=[('messy', 'Messy'),('average', 'Average'), ('clean', 'Clean')], validators=[DataRequired()])
+    #price = SelectField("Price range", [('low', '$'),('average', '$$'), ('high', '$$$')], validators=[DataRequired()])
+    #noiselevel = SelectField("How loud are you?", [('quiet', 'Quiet'),('average', 'Average'), ('loud', 'Loud')], validators=[DataRequired()])
+    #petfriendly = SelectField("Pet-friendly?", [('yes', 'Yes'),('no', 'No')], validators=[DataRequired()])
     genderPreferences = SelectField("Gender Preference", choices=[('male', 'Male Only'), ('female', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     
     submit = SubmitField("Submit")
@@ -176,7 +188,6 @@ class ProfileForm(FlaskForm):
 
 #temporary chat form
 class ChatForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
     room = StringField('Room', validators=[DataRequired()])
     submit = SubmitField('Enter Chatroom')
 
@@ -187,18 +198,23 @@ roomr pages
 @app.route('/', methods=["GET"])
 def home():
     if current_user.is_authenticated == True:
-        users = match()
+        print("main home")
+        users = findSuggestions()
         return render_template("home.html", users = users)
     else:
+        print("else home")
         return render_template("home.html")
+    # return render_template("home.html")
+
     #need links to login or create an account
 
 #sign-up page
 @app.route("/signup", methods=["GET","POST"])
 def signup():
+    # profilePicture = request.files['profilePicture']
     fname, lname, email, dob, password = None, None, None, None, None
     form = SignupForm()
-    print(form.validate_on_submit())
+    # print(form.validate_on_submit())
     if form.validate_on_submit():
         fname = form.fname.data
         lname = form.lname.data
@@ -206,8 +222,19 @@ def signup():
         dob = form.dob.data
         userPassword = form.password.data
 
-        profilePicture = form.profilePicture.data
-        profilePicture.save(os.path.join(app.instance_path, 'photos', filename))
+        # profilePicture = form.profilePicture.data
+        # filename = secure_filename(profilePicture.filename)
+        # profilePicture.save(os.path.join(app.instance_path, 'photos', filename))
+        if form.profilePicture.data != None:
+            filename = images.save(form.profilePicture.data)
+            file_url = images.url(filename)
+            profilePicture = file_url
+        else:
+            profilePicture = url_for('static', filename="generic-profile-picture.jpg")
+        # filename = secure_filename(profilePicture.filename)
+        # print(file_url)
+
+
         location = form.location.data
         gender = form.gender.data
         bio = form.bio.data
@@ -216,7 +243,8 @@ def signup():
         genderPreferences = form.genderPreferences.data
         cleanliness = form.cleanliness.data
         
-        user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, profilePicture = profilePicture, \
+        #add profilePicture=profilePicture to user
+        user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, profilePicture=profilePicture, \
             location=location, cleanliness=cleanliness, gender=gender, \
             bio = bio, smoker=smoker, sleep=sleepPattern, genderPreferences = genderPreferences)
         db.session.add(user)
@@ -278,11 +306,19 @@ def editProfile():
     profilePicture, location, gender, bio, smoker, sleepPattern, cleanliness, genderPreferences = None, None, None, None, None, None, None, None
     user = current_user
 
-    prefill = {'profilePicture': str(user.profilePicture), 'location': str(user.location), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
+    prefill = {'location': str(user.location), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
     form = ProfileForm(data=prefill)
 
     if form.validate_on_submit and request.method=="POST":
-        user.profilePicture = form.profilePicture.data
+        # user.profilePicture = form.profilePicture.data
+        if form.profilePicture.data != None:
+            print(form.profilePicture.data)
+            filename = images.save(form.profilePicture.data)
+            file_url = images.url(filename)
+            user.profilePicture = file_url
+        else:
+            user.profilePicture = url_for('static', filename="generic-profile-picture.jpg", _external=True)
+            
         user.location = form.location.data
         user.gender = form.gender.data
         user.bio = form.bio.data
@@ -314,26 +350,24 @@ def viewProfile(email):
 def user():
     return render_template("user.html")
 
+#chat room page
 @app.route('/chat')
+@login_required
 def chat():
-    """Chat room. The user's name and room must be stored in
-    the session."""
-    name = session.get('name', '')
     room = session.get('room', '')
-    if name == '' or room == '':
-        return redirect(url_for('.index'))
+    name = session.get('name', '')
     return render_template('chat.html', name=name, room=room)
 
+#login page to enter a chatroom
 @app.route('/chatform', methods=["GET", "POST"])
+@login_required
 def chatform():
-    """Login form to enter a room."""
     form = ChatForm()
     if form.validate_on_submit():
-        session['name'] = form.name.data
         session['room'] = form.room.data
+        session['name'] = current_user.fname
         return redirect(url_for('.chat'))
     elif request.method == 'GET':
-        form.name.data = session.get('name', '')
         form.room.data = session.get('room', '')
     return render_template('chatform.html', form=form)
 
@@ -355,72 +389,83 @@ def confirm(token):
     return redirect(url_for("home"))
 
 
-def match():
-    # gender
+def findSuggestions():
+    """
+    hard preferences 
+    gender, location
+    """
     users = None
     if current_user.genderPreferences == "any":
         # users = User.query.filter_by(genderPreferences=current_user.gender | genderPreferences='any').all()
-        users = User.query.filter(or_(User.genderPreferences==current_user.gender, User.genderPreferences=='any')).all()
+        users = User.query.filter(or_(User.genderPreferences==current_user.gender, User.genderPreferences=='any'), User.location==current_user.location).all()
     elif current_user.genderPreferences == "male":
-        users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any")).all()
+        users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.location==current_user.location).all()
     elif current_user.genderPreferences == "female":
-        users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any")).all()
-   
+        users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.location==current_user.location).all()
+    
+    """
+    soft preference suggestion algorithm
+    # smoker
+    # sleepPattern
+    # cleanliness
+    # price
+    # noiselevel
+    # petfriendly
+    """
+    
+    points = []
+    for user in users:
+        total = 0
+        if current_user.smoker == user.smoker:
+            total += 1
+        else:
+            total += 0
+
+        if current_user.sleep == user.sleep:
+            total += 1
+        else:
+            total += 0
+
+        if current_user.cleanliness == user.cleanliness:
+            total += 1
+        elif (current_user.cleanliness == "clean" and user.cleanliness == "messy") or (current_user.cleanliness == "messy" and user.cleanliness == "clean"):
+            total += 0
+        else:
+            total += 0.5
+            
+        points.append((user, total))
+    print(points)
+
+    #smoker
+    # users = users.query.filter(User.smoker==current_user.smoker).all()
+
     return users
 
     # print(users)
-    
-
-""" 
-email authentication
-"""
-# subject = "roomr Account Confirmation"
-# sender = "roomr@mailinator.com"
-# recipient = "asiegle@u.rochester.edu"
-
-
-# #create the Message
-# msg = MIMEMultipart("alternative")
-# msg["Subject"] = subject
-# msg["From"] = sender
-# msg["To"] = recipient
-
-# #Record the MIME types of both parts - text/plain and text/html
-# part1 = MIMEText("hiHi", "plain")
-# part2 = MIMEText("email_Auth.html", "html")
-
-# #Send Message
-# context = ssl.create_default_context()
-# server, port = "127.0.0.1", 25
-# with smtplib.SMTP_SSL(server, port, context=context) as s:
-#     s.login(sender, "123") # this line makes it password restricted
-#     s.sendmail(sender, recipient, msg.as_string())
 
 """ 
 chat functionality
 """
+#message sent when you enter the chat room
 @socketio.on('joined', namespace='/chat')
 def joined(message):
-    """Sent by clients when they enter a room.
-    A status message is broadcast to all people in the room."""
     room = session.get('room')
     join_room(room)
     emit('status', {'msg': session.get('name') + ' has entered the room.'}, room=room)
 
+#sending a message in the chat room
 @socketio.on('text', namespace='/chat')
 def text(message):
-    """Sent by a client when the user entered a new message.
-    The message is sent to all people in the room."""
     room = session.get('room')
-    emit('message', {'msg': session.get('name') + ':' + message['msg']}, room=room)
+    emit('message', {'msg': session.get('name') + ': ' + message['msg']}, room=room)
 
+#message sent when you exit the chat room
 @socketio.on('left', namespace='/chat')
 def left(message):
-    """Sent by clients when they leave a room.
-    A status message is broadcast to all people in the room."""
     room = session.get('room')
     leave_room(room)
     emit('status', {'msg': session.get('name') + ' has left the room.'}, room=room)
+
 """ 
 running the app
 """
@@ -428,4 +473,3 @@ if __name__ == '__main__':
     # app.run()
     app.run(host='127.0.0.1', port=8080, debug=True)
     socketio.run(app)
-
