@@ -200,7 +200,9 @@ def home():
     if current_user.is_authenticated == True:
         print("main home")
         users = findSuggestions()
-        return render_template("home.html", users = users)
+        points = softPreferences(users)
+        points = dict(points)
+        return render_template("home.html", users = users, points = points)
     else:
         print("else home")
         return render_template("home.html")
@@ -388,7 +390,7 @@ def confirm(token):
         flash("Your confirmation link is invalid or has expired")
     return redirect(url_for("home"))
 
-
+#filtering hard preferences
 def findSuggestions():
     """
     hard preferences 
@@ -402,17 +404,13 @@ def findSuggestions():
         users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.location==current_user.location).all()
     elif current_user.genderPreferences == "female":
         users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.location==current_user.location).all()
-    
-    """
-    soft preference suggestion algorithm
-    # smoker
-    # sleepPattern
-    # cleanliness
-    # price
-    # noiselevel
-    # petfriendly
-    """
-    
+
+    return users
+
+    # print(users)
+
+#calculating percentage match for soft preferences
+def softPreferences(users):
     points = []
     for user in users:
         total = 0
@@ -432,16 +430,36 @@ def findSuggestions():
             total += 0
         else:
             total += 0.5
+
+        # if current_user.price == user.price:
+        #     total += 1
+        # elif (current_user.price == "$" and user.cleanliness == "$$$") or (current_user.cleanliness == "$$$" and user.cleanliness == "$"):
+        #     total += 0
+        # else:
+        #     total += 0.5
+
+        # if current_user.noiselevel == user.noiselevel:
+        #     total += 1
+        # elif (current_user.noiselevel == "quiet" and user.noiselevel == "loud") or (current_user.noiselevel == quiet and user.noiselevel == "quiet"):
+        #     total += 0
+        # else:
+        #     total += 0.5
+
+        # if current_user.petfriendly == user.petfriendly:
+        #     total += 1
+        # else:
+        #     total += 0
             
-        points.append((user, total))
-    print(points)
+        #total will be a percentage
+        total = int((total/3) * 100)
+
+        points.append((user.email, total))
+
+    return points
 
     #smoker
     # users = users.query.filter(User.smoker==current_user.smoker).all()
 
-    return users
-
-    # print(users)
 
 """ 
 chat functionality

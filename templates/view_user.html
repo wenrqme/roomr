@@ -27,7 +27,6 @@
         </nav>
     
         <div class="content" >
-            
             {% if current_user.is_authenticated %}
                 <h1> {{ other_user.fname|capitalize }} {{ other_user.lname|capitalize }} </h1>
                 <p> <b>Email address:</b> {{ other_user.email }}</p>
