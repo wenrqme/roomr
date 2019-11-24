@@ -80,6 +80,20 @@ body {
 	background-color:#ccc!important;
 }
 
+/* used for dislpaying the numbers in the suggested match boxes */
+#topright {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  background: #607d8b;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  color: #fff;
+  text-align: center;
+}
+
 .error{
     color: red;
     font-weight: bold;
@@ -119,4 +133,56 @@ body {
 	margin: auto;
 	width: 40%;
 }
+/**/
+/* CODE FOR FLIPPING THROUGH SUGGESTED MATCHES 
+(credit to https://www.w3schools.com/howto/howto_js_slideshow_gallery.asp) */
+/**/
+
+/* class for displaying the suggested matches */
+.suggestedMatches {
+  	border-radius: 30px;
+  	border: 5px solid #607d8b;
+ 	padding: 40px;
+  	display:inline-block;
+}
+
+/* Position the container (needed to position the left and right arrows) */
+.slideshow {
+  	position: relative;
+}
+
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {
+  	cursor: pointer;
+}
+
+/* slideshow container */
+.slideshow-container {
+	max-width: 1000px;
+	position: relative;
+	margin: auto;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  	cursor: pointer;
+  	position: absolute;
+  	top: 50%;ç
+  	width: auto;
+  	margin-top: -22px;
+  	padding: 16px;
+  	color: black;
+  	font-weight: bold;
+  	font-size: 18px;
+  	transition: 0.6s ease;
+  	border-radius: 0 6px 6px 0;
+  	user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  	right: 0;
+  	border-radius: 3px 0 0 3px;
+}
+
 

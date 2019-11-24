@@ -4,7 +4,7 @@
     <title> roomr - home </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
-
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
 </head>
 <body>
     <!-- Sidebar content -->
@@ -28,11 +28,73 @@
 
     <!-- Homepage content -->
     <div class="content" >
-        <h1> welcome to roomr. </h1>
         {% if current_user.is_authenticated %}
-            <p> *homepage feed here* </p>
-            <p> {{users}}</p>
+            <h1> My Suggested Users </h1>
+            <div class="slideshow">
+                {% for user in users %}
+                <div class="suggestedMatches">
+                    <h2><div id="topright"> {{loop.index}} </div></h2>
+                    <p> {{ user.fname|capitalize }} is a <b>{{ points[user.email] }}%</b> match! </p>
+                    <div style="text-align: center">
+                        <h3> {{ user.fname|capitalize }} {{ user.lname|capitalize }} </h3>
+                        <p><img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:200px;height:200px;"></p>
+                        <p>{{ user.bio }}</p>
+                    </div>
+                    <p> <b>Email address:</b> {{ user.email }}</p>
+                    <p> <b>Date of Birth:</b> {{ user.dob }}</p>
+                    <p> <b>Location:</b> {{ user.location }} </p>
+                    <p> <b>Gender:</b> {{ user.gender }}</p>
+                    <p> <b>Gender Preference:</b> {{ user.genderPreferences }} </p>
+                    <p> <b>Smoker:</b> {{ user.smoker }} 
+                    {% if current_user.smoker == user.smoker %} &nbsp;
+                        <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                    {% endif %}
+                    </p>
+                    <p> <b>Sleep Pattern:</b> {{ user.sleep }} &nbsp;
+                    {% if current_user.sleep == user.sleep %}
+                        <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                    {% endif %}
+                    </p>
+                    <p> <b>Cleanliness:</b> {{ user.cleanliness }}
+                    {% if current_user.cleanliness == user.cleanliness %} &nbsp;
+                        <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                    {% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+                <a class="prev" onclick="plusMatches(-1)">&#10094;</a>
+                <a class="next" onclick="plusMatches(1)">&#10095;</a>
+            </div>
+            <script type="text/javascript">
+                var matchIndex = 1;
+                showMatches(matchIndex);
+
+                // Next/previous controls
+                function plusMatches(n) {
+                    showMatches(matchIndex += n);
+                }
+
+                function showMatches(n) {
+                    var i;
+                    var matches = document.getElementsByClassName("suggestedMatches");
+                    if (n > matches.length) {
+                        matchIndex = 1 }
+                    if (n < 1) {
+                        matchIndex = matches.length}
+                    for (i = 0; i < matches.length; i++) {
+                        matches[i].style.display = "none";
+                    }
+                    matches[matchIndex-1].style.display = "block";
+                }
+            </script>
         {% else %}
+            <h1> welcome to roomr. </h1>
             <p> New user? Sign up now! </p>
         {% endif %}
     </div>
