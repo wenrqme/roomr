@@ -148,7 +148,9 @@ body {
 
 /* Position the container (needed to position the left and right arrows) */
 .slideshow {
-  	position: relative;
+	position: relative;
+	/* padding-top:64px; */
+	padding-bottom:64px;
 }
 
 /* Add a pointer when hovering over the thumbnail images */
@@ -161,13 +163,14 @@ body {
 	max-width: 1000px;
 	position: relative;
 	margin: auto;
+	
 }
 
 /* Next & previous buttons */
 .prev, .next {
   	cursor: pointer;
   	position: absolute;
-  	top: 50%;ç
+  	top: 50%;
   	width: auto;
   	margin-top: -22px;
   	padding: 16px;
@@ -186,3 +189,6 @@ body {
 }
 
 
+#matchAmount {
+	text-align: center;
+}
