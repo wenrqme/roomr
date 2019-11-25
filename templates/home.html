@@ -35,7 +35,7 @@
                 <div class="suggestedMatches">
                     <h2><div id="topright"> {{loop.index}} </div></h2>
                     <h2 id="matchAmount"> {{ user.fname|capitalize }} is a <b>{{ points[user.email] }}%</b> match! </h2>
-
+                    <p><a href="{{ url_for('privatechat', email = user.email) }}"> Chat with {{ user.fname }}! </a></p>
                     <div class="profile"> 
                             <br>
                             <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:70%;" >

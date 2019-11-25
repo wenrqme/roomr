@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> roomr - chat </title>
+        <title> roomr - private 
+        chat </title>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
         <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
@@ -61,7 +62,7 @@
         </nav>
     
         <div class="content">
-            <h1>Chat Room: {{ room }}</h1>
+            <h1> Private chat with {{ user.fname.capitalize() }}</h1>
             <textarea id="chat" cols="80" rows="20"></textarea><br><br>
             <input id="text" size="80" placeholder="Enter your message here"><br><br>
             <a href="#" onclick="leave_room();">Leave this room</a>

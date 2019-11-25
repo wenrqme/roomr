@@ -360,6 +360,17 @@ def chat():
     name = session.get('name', '')
     return render_template('chat.html', name=name, room=room)
 
+#private chat room page
+@app.route('/privatechat/<email>')
+@login_required
+def privatechat(email):
+    user = User.query.filter_by(email=email).first()
+    room = "".join(sorted([user.email, current_user.email]))
+    name = current_user.fname
+    session['room'] = room
+    session['name'] = name
+    return render_template('privatechat.html', user=user, name=name, room=room)
+
 #login page to enter a chatroom
 @app.route('/chatform', methods=["GET", "POST"])
 @login_required
