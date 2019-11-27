@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, url_for, flash, render_template, redirect, request, session
+from flask import Flask, url_for, flash, render_template, redirect, request, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 import datetime 
@@ -42,8 +42,18 @@ socketio = SocketIO(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 with app.open_resource("usaCities.json", 'r') as fin:
-    users = json.load(fin)
+    cities = json.load(fin)
 
+states = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado", \
+  "Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois", \
+  "Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland", \
+  "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana", \
+  "Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York", \
+  "North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania", \
+  "Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah", \
+  "Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]
+
+        
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -87,7 +97,8 @@ class User(UserMixin, db.Model):
     confirmed = db.Column(db.Boolean(), default=False)
     
     profilePicture = db.Column(db.String(64), nullable=True)
-    location = db.Column(db.String(32), index=True, nullable=False)
+    state = db.Column(db.String(32), index=True, nullable=False)
+    city = db.Column(db.String(32), index=True, nullable=False)
     gender = db.Column(db.String(6), index=True, nullable=False)
     bio = db.Column(db.String(500), index=True, nullable=True)
     smoker = db.Column(db.String(3), index=True, nullable=False)
@@ -157,7 +168,8 @@ class SignupForm(FlaskForm):
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
 
     profilePicture = FileField("Profile Picture", validators=[FileAllowed(images, 'Images only!')])
-    location = StringField("Location", validators=[DataRequired()])
+    state = SelectField("State", choices=[(state, state) for state in states])
+    city = SelectField("City", choices=[])
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
@@ -176,7 +188,8 @@ class SignupForm(FlaskForm):
 
 class ProfileForm(FlaskForm):
     profilePicture = FileField("Profile Picture", validators=[FileAllowed(images, 'Images only!')])
-    location = StringField("Location", validators=[DataRequired()])
+    state = SelectField("State", choices=[(state, state) for state in states])
+    city = SelectField("City", choices=[])
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
@@ -185,6 +198,20 @@ class ProfileForm(FlaskForm):
     
     genderPreferences = SelectField("Gender Preference", choices=[('male', 'Male Only'), ('female', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+@app.route('/city/<state>')
+def city(state):
+    currentCities = cities[state]
+
+    cityArray = []
+
+    for city in currentCities:
+        cityObj = {}
+        cityObj['state'] = state
+        cityObj['name'] = city
+        cityArray.append(cityObj)
+
+    return jsonify({'cities' : cityArray})
 
 #temporary chat form
 class ChatForm(FlaskForm):
@@ -199,6 +226,7 @@ roomr pages
 def home():
     if current_user.is_authenticated == True:
         print("main home")
+        print(current_user.state, current_user.city)
         users = findSuggestions()
         points = softPreferences(users)
         points = dict(points)
@@ -216,6 +244,9 @@ def signup():
     # profilePicture = request.files['profilePicture']
     fname, lname, email, dob, password = None, None, None, None, None
     form = SignupForm()
+    prefill = {'state': 'Alabama'}
+    form = SignupForm(data=prefill)
+    form.city.choices = [(city, city) for city in cities[form.state.data]]
     # print(form.validate_on_submit())
     if form.validate_on_submit():
         fname = form.fname.data
@@ -236,8 +267,8 @@ def signup():
         # filename = secure_filename(profilePicture.filename)
         # print(file_url)
 
-
-        location = form.location.data
+        state = form.state.data
+        city = form.city.data
         gender = form.gender.data
         bio = form.bio.data
         smoker = form.smoker.data
@@ -247,7 +278,7 @@ def signup():
         
         #add profilePicture=profilePicture to user
         user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, profilePicture=profilePicture, \
-            location=location, cleanliness=cleanliness, gender=gender, \
+            state=state, city=city, cleanliness=cleanliness, gender=gender, \
             bio = bio, smoker=smoker, sleep=sleepPattern, genderPreferences = genderPreferences)
         db.session.add(user)
         db.session.commit()
@@ -305,11 +336,13 @@ def logout():
 @app.route("/user/edit", methods=["GET","POST"])
 @login_required
 def editProfile():
-    profilePicture, location, gender, bio, smoker, sleepPattern, cleanliness, genderPreferences = None, None, None, None, None, None, None, None
+    profilePicture, state, city, gender, bio, smoker, sleepPattern, cleanliness, genderPreferences = None, None, None, None, None, None, None, None, None
     user = current_user
 
-    prefill = {'location': str(user.location), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
+    prefill = {'state': str(user.state), 'city': str(user.city), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
     form = ProfileForm(data=prefill)
+    form.city.choices = [(city, city) for city in cities[str(user.state)]]
+    #form.city.data = user.city
 
     if form.validate_on_submit and request.method=="POST":
         # user.profilePicture = form.profilePicture.data
@@ -320,8 +353,9 @@ def editProfile():
             user.profilePicture = file_url
         # else:
             # user.profilePicture = url_for('static', filename="generic-profile-picture.jpg", _external=True)
-            
-        user.location = form.location.data
+
+        user.state = form.state.data    
+        user.city = form.city.data
         user.gender = form.gender.data
         user.bio = form.bio.data
         user.smoker = form.smoker.data
@@ -410,11 +444,11 @@ def findSuggestions():
     users = None
     if current_user.genderPreferences == "any":
         # users = User.query.filter_by(genderPreferences=current_user.gender | genderPreferences='any').all()
-        users = User.query.filter(or_(User.genderPreferences==current_user.gender, User.genderPreferences=='any'), User.location==current_user.location).all()
+        users = User.query.filter(or_(User.genderPreferences==current_user.gender, User.genderPreferences=='any'), User.state==current_user.state, User.city==current_user.city, User.id!=current_user.id).all()
     elif current_user.genderPreferences == "male":
-        users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.location==current_user.location).all()
+        users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.state==current_user.state, User.city==current_user.city, User.id!=current_user.id).all()
     elif current_user.genderPreferences == "female":
-        users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.location==current_user.location).all()
+        users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.state==current_user.state, User.city==current_user.city, User.id!=current_user.id).all()
 
     return users
 

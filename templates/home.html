@@ -44,7 +44,7 @@
                                 <span id = "quest"> {{user.gender.capitalize()}} </span> 
                                 <span id = "response">Age: {{ user.dob.today().year - user.dob.year }}</span>
                                 <br>
-                                <div>{{user.location}}</div>
+                                <div>{{user.city}}, {{user.state}}</div>
                                 <br>
                             </div>
                             <div id="bio"> Bio: <br> {{user.bio}} </div>

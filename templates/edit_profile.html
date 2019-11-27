@@ -37,7 +37,9 @@
             {% endfor %}
             <form method="POST"  enctype="multipart/form-data">
                 {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
-                {{ form.location.label }} : {{ form.location() }} <br>
+                Location <br>
+                {{ form.state.label }} : {{ form.state() }}
+                {{ form.city.label }} : {{ form.city() }} <br>
                 {{ form.gender.label }} : {{ form.gender() }} <br>
                 {{ form.bio.label }} : {{ form.bio() }} <br>
                 {{ form.smoker.label }} : {{ form.smoker() }} <br>
@@ -46,8 +48,29 @@
                 {{ form.cleanliness.label }}: {{ form.cleanliness() }}<br>
                 {{ form.submit() }}
             </form>
-
-
+            <script>
+                var state_select = document.getElementById("state");
+                var city_select = document.getElementById("city");
+        
+                state_select.onchange = function()  {
+                     
+                    state = state_select.value;
+                    
+                    fetch('/city/' + state).then(function(response) {
+        
+                        response.json().then(function(data) {
+                            var optionHTML = '';
+        
+                            for (var city of data.cities) {
+                                optionHTML += '<option value="' + city.state + '">' + city.name + '</option>';
+                            }
+        
+                            city_select.innerHTML = optionHTML;
+                        })
+                        
+                    });
+                }
+            </script>
         </div>
     </body>
 </html>
