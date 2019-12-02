@@ -35,13 +35,32 @@
             {% endfor %}
             <form method="POST">
                 {{ form.hidden_tag() }}
-                {{ form.email.label }}: {{ form.email(type="email") }}<br>
-                {% for error in form.email.errors %}
-                <span class = "error"></span>[{{ error}}]</span>
-                {% endfor %}
-                {{ form.password.label }}: {{ form.password() }}<br>
-                {{ form.remember_me.label }}:<br> {{ form.remember_me() }}
-                {{ form.submit() }}
+                <table id="loginTable">
+                    <tr>
+                        <td id="loginLabel">Email: </td>
+                        <td id="loginField">{{ form.email(type="email", placeholder="Email") }}</td>
+                    </tr>
+                    {% for error in form.email.errors %}
+                    <span class = "error"></span>[{{ error}}]</span>
+                    {% endfor %}
+                    <tr>
+                        <td id="loginLabel">Password: </td>
+                        <td id="loginField">{{ form.password(type="password", placeholder="Password") }}</td>
+                    </tr>
+                </table>
+                <label class="control control-checkbox">
+                        Remember Me{{ form.remember_me() }} 
+                        <div class="control_indicator"></div>
+                </label>
+                
+                <div id="logSub">
+                    {{ form.submit() }}
+                </div>
+                <!-- {{ form.email.label }}: {{ form.email(type="email", placeholder="Email") }}<br>
+                
+                {{ form.password.label }}: {{ form.password(type="password", placeholder="Password") }}<br> -->
+                <!-- {{ form.remember_me.label }}:<br> {{ form.remember_me() }} -->
+                <!-- {{ form.submit() }} -->
             </form>
         </div>
     </body>

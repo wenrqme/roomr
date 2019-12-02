@@ -35,8 +35,8 @@
                 {{ message }}
             </div>
             {% endfor %}
-            <form method="POST"  enctype="multipart/form-data">
-                {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
+            <form method="POST"  enctype="multipart/form-data" id="signupForm">
+                <!-- {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
                 Location <br>
                 {{ form.state.label }} : {{ form.state() }}
                 {{ form.city.label }} : {{ form.city() }} <br>
@@ -46,7 +46,92 @@
                 {{ form.sleepPattern.label }} : {{ form.sleepPattern() }} <br>
                 {{ form.genderPreferences.label }} : {{ form.genderPreferences() }} <br>
                 {{ form.cleanliness.label }}: {{ form.cleanliness() }}<br>
-                {{ form.submit() }}
+                {{ form.submit() }} -->
+
+                <table id="pref">
+                    <tr>
+                        <td id="question">Gender:  </td>
+                        <td id="answ">{{form.gender(id="ansSel")}}</td>
+                    </tr>
+                </table>
+
+                <!-- {{ form.gender.label }} : {{ form.gender() }} <br> -->
+                <br>
+                <h3>Location:</h3>
+                <table>
+                    <tr>
+                        <td>State:</td>
+                        <td>City: </td>
+                    </tr>
+                    <tr>
+                        <td> {{ form.state() }} </td>
+                        <td> {{ form.city() }}</td>
+                    </tr>
+                </table>
+                <br>
+                <!-- {{ form.city.label }} : {{ form.city() }} <br> -->
+
+                <table style="width:108%">
+                    <tr>
+                        <td>Bio:</td>
+                    </tr>
+                    <tr>
+                        <td id="bioField">{{ form.bio(placeholder="Write something about yourself...") }}</td>
+                    </tr>
+                </table>
+                <!-- {{ form.bio.label }} : {{ form.bio() }} <br> -->
+
+
+                <table id="pref">
+                    <tr>
+                        <td id="question">Do you smoke?:  </td>
+                        <td id="answ">{{ form.smoker(id="ansSel") }}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Sleep Pattern:  </td>
+                        <td id="answ">{{ form.sleepPattern(id="ansSel") }}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Gender Preference:  </td>
+                        <td id="answ">{{ form.genderPreferences(id="ansSel") }}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Cleanliness:  </td>
+                        <td id="answ">{{ form.cleanliness(id="ansSel")}}</td>
+                    </tr>
+                </table>
+                <!-- {{ form.smoker.label }} : {{ form.smoker() }} <br> -->
+                <!-- {{ form.sleepPattern.label }} : {{ form.sleepPattern() }} <br>
+                {{ form.genderPreferences.label }} : {{ form.genderPreferences() }} <br>
+                {{ form.cleanliness.label }}: {{ form.cleanliness()}}<br> -->
+                <br>
+
+                <table id="pic">
+                    <tr>
+                        <td> Profile Picture: </td>
+                        
+                    </tr>
+                    <tr>
+                        <td> {{ form.profilePicture(id="file", dataMultipleCaption="{count} files selected") }}
+                            <label for="file"><span>choose a file</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <br>
+                            {{ form.submit() }}
+                        </td>
+                    </tr>
+                </table>
+                <br>
+
+                <br>
+                <br>
+    
+                    
+    
+                </form>
+
             </form>
             <script>
                 var state_select = document.getElementById("state");
@@ -71,6 +156,29 @@
                     });
                 }
             </script>
+            <script>
+                    var inputs = document.querySelectorAll( '#file' );
+                    Array.prototype.forEach.call( inputs, function( input ) {
+                    var label = input.nextElementSibling,
+                                labelVal = label.innerHTML;
+                    
+                    input.addEventListener( 'change', function( e ) {
+                        var fileName = '';
+                        
+                        if ( this.files && this.files.length > 1 ) {
+                        fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+                        } else {
+                        fileName = e.target.value.split( '\\' ).pop();
+                        }
+                    
+                        if ( fileName ) {
+                        label.querySelector( 'span' ).innerHTML = fileName;
+                        } else {
+                        label.innerHTML = labelVal;
+                        }
+                    });
+                     });
+                    </script>
         </div>
     </body>
 </html>

@@ -32,6 +32,8 @@
             <br>
             
             {% if current_user.is_authenticated %}
+            <div style="padding-bottom:100px;">
+                <h2 style="text-align: center;">Public Profile:</h2>
                 <div class="profile"> 
                     <br>
                     <img src= "{{ current_user.profilePicture }}" alt = "Profile picture", style = "width:80%" >
@@ -52,17 +54,16 @@
                     </div>
                     <br>
                     <br>
-
                 </div>
+                <br>
+                <div class="profile" style="width:500px;">
+                    <h2 style="padding-top: 10px;">Account Info:</h2>
+                    {{ current_user.fname }} {{ current_user.lname }} <br>
+                    Email address: {{ current_user.email }} <br>
+                    Date of Birth: {{ current_user.dob }} <br><br>
+                 </div>
+            </div>
 
-
-
-                <p>hiHi {{ current_user.fname }} {{ current_user.lname }}!</p> 
-                <p> Email address: {{ current_user.email }}</p>
-                <p>Date of Birth: {{ current_user.dob }}</p>
-            
-                <div>
-                </div>
             {% endif %}
             
         </div>
