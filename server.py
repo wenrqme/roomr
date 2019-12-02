@@ -53,7 +53,13 @@ states = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado", \
   "Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah", \
   "Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]
 
-        
+
+allCities = []
+for state in states:
+    allCities += [(city, city) for city in cities[state]]
+
+# print (allCities)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -189,7 +195,7 @@ class SignupForm(FlaskForm):
 class ProfileForm(FlaskForm):
     profilePicture = FileField("Profile Picture", validators=[FileAllowed(images, 'Images only!')])
     state = SelectField("State", choices=[(state, state) for state in states])
-    city = SelectField("City", choices=[])
+    city = SelectField("City")
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
@@ -293,6 +299,7 @@ def signup():
     elif request.method=="POST": 
         print("not validated")
         flash('Some information is incorrect')
+        flash(form.errors)
     return render_template("signup.html", form=form)
 
 #login page

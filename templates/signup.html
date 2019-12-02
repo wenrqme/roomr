@@ -34,37 +34,127 @@
                 {{ message }}
             </div>
             {% endfor %}
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" id="signupForm">
                 {{ form.hidden_tag() }}
-                {{ form.fname.label }}: {{ form.fname(size = 15, maxlength = 32) }}<br>
-                {{ form.lname.label }}: {{ form.lname(size = 15, maxlength = 32) }}<br>
-                {{ form.email.label }}: {{ form.email(type="email", size = 30, maxlength = 64) }}<br>
-                {{ form.email2.label }}: {{ form.email2(type="email", size = 30, maxlength = 64) }} 
+                Full Name: <br>
+                {{ form.fname(size = 15, maxlength = 32, placeholder="First Name") }}
+                {{ form.lname(size = 15, maxlength = 32, placeholder="Last Name") }}<br>
+                <!-- {{ form.fname.label }}: {{ form.fname(size = 15, maxlength = 32) }}<br>
+                {{ form.lname.label }}: {{ form.lname(size = 15, maxlength = 32) }}<br> -->
+
+
+                Email: <br>
+                {{ form.email(type="email", size = 30, maxlength = 64, placeholder="Email") }}<br>
+                Confirm Email: <br>
+                {{ form.email2(type="email", size = 30, maxlength = 64, placeholder="Confirm Email") }}
                 {% for error in form.email.errors %}
                     <span class = "error">{{ error}}</span>
                 {% endfor %}
-                <br>
-                {{ form.dob.label }}: {{ form.dob(type="date", size = 8, maxlength = 8) }}<br>
-                {{ form.password.label }}: {{ form.password(type="password") }}<br>
-                {{ form.password2.label }}: {{ form.password2(type="password") }}
+
+
+                <table>
+                    <tr>
+                        <td>Password:</td>
+                        <td>Confirm Password:</td>
+                    </tr>
+                    <tr>
+                        <td> {{ form.password(type="password", placeholder="Password") }} </td>
+                        <td> {{ form.password2(type="password", placeholder="Confirm Password") }} </td>
+                    </tr>
+                </table>
                 {% for error in form.password.errors %}
                     <span class = "error">{{ error}}</span>
                 {% endfor %}
                 <br>
+                <!-- Date of Birth: <br>
+                {{ form.dob(type="date", size = 8, maxlength = 8, min="1900-01-01", max="2019-12-01") }}<br> -->
+
+                <table>
+                    <tr>
+                        <td>Birthday:</td>
+                        <td>Gender: </td>
+                    </tr>
+                    <tr>
+                        <td> {{ form.dob(type="date", size = 8, maxlength = 8, min="1900-01-01", max="2019-12-30") }}</td>
+                        <td id="genderSelect">{{form.gender()}}</td>
+                    </tr>
+                </table>
+
+                <!-- {{ form.gender.label }} : {{ form.gender() }} <br> -->
                 <br>
-                {{ form.profilePicture.label }} : {{ form.profilePicture() }} <br>
-                Location <br>
-                {{ form.state.label }} : {{ form.state() }}
-                {{ form.city.label }} : {{ form.city() }} <br>
-                {{ form.gender.label }} : {{ form.gender() }} <br>
-                {{ form.bio.label }} : {{ form.bio() }} <br>
-                {{ form.smoker.label }} : {{ form.smoker() }} <br>
-                {{ form.sleepPattern.label }} : {{ form.sleepPattern() }} <br>
+                <h3>Location:</h3>
+                <table>
+                    <tr>
+                        <td>State:</td>
+                        <td>City: </td>
+                    </tr>
+                    <tr>
+                        <td> {{ form.state() }} </td>
+                        <td> {{ form.city() }}</td>
+                    </tr>
+                </table>
+                <br>
+                <!-- {{ form.city.label }} : {{ form.city() }} <br> -->
+
+                <table style="width:108%">
+                    <tr>
+                        <td>Bio:</td>
+                    </tr>
+                    <tr>
+                        <td id="bioField">{{ form.bio(placeholder="Write something about yourself...") }}</td>
+                    </tr>
+                </table>
+                <!-- {{ form.bio.label }} : {{ form.bio() }} <br> -->
+
+
+                <table id="pref">
+                    <tr>
+                        <td id="question">Do you smoke?:  </td>
+                        <td id="answ">{{ form.smoker(id="ansSel") }}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Sleep Pattern:  </td>
+                        <td id="answ">{{ form.sleepPattern(id="ansSel") }}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Gender Preference:  </td>
+                        <td id="answ">{{ form.genderPreferences(id="ansSel") }}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Cleanliness:  </td>
+                        <td id="answ">{{ form.cleanliness(id="ansSel")}}</td>
+                    </tr>
+                </table>
+                <!-- {{ form.smoker.label }} : {{ form.smoker() }} <br> -->
+                <!-- {{ form.sleepPattern.label }} : {{ form.sleepPattern() }} <br>
                 {{ form.genderPreferences.label }} : {{ form.genderPreferences() }} <br>
-                {{ form.cleanliness.label }}: {{ form.cleanliness()}}<br>
+                {{ form.cleanliness.label }}: {{ form.cleanliness()}}<br> -->
                 <br>
 
-                {{ form.submit() }}
+                <table id="pic">
+                    <tr>
+                        <td> Profile Picture: </td>
+                        
+                    </tr>
+                    <tr>
+                        <td> {{ form.profilePicture(id="file", dataMultipleCaption="{count} files selected") }}
+                            <label for="file"><span>choose a file</span></label>
+                        </td>
+                    </tr>
+                    <tr>
+                            <td>
+                                <br>
+                                {{ form.submit() }}
+                            </td>
+                    </tr>
+                </table>
+                 <br>
+
+                <br>
+                <br>
+
+                
+
             </form>
             <script>
                 var state_select = document.getElementById("state");
@@ -88,6 +178,29 @@
                         
                     });
                 }
+            </script>
+            <script>
+            var inputs = document.querySelectorAll( '#file' );
+            Array.prototype.forEach.call( inputs, function( input ) {
+            var label = input.nextElementSibling,
+                        labelVal = label.innerHTML;
+            
+            input.addEventListener( 'change', function( e ) {
+                var fileName = '';
+                
+                if ( this.files && this.files.length > 1 ) {
+                fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+                } else {
+                fileName = e.target.value.split( '\\' ).pop();
+                }
+            
+                if ( fileName ) {
+                label.querySelector( 'span' ).innerHTML = fileName;
+                } else {
+                label.innerHTML = labelVal;
+                }
+            });
+             });
             </script>
         </div>
     </body>
