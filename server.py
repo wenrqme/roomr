@@ -527,6 +527,9 @@ def chatform():
             if w != current_user.email:
                 modified_unique_rooms.append(w)
     print(modified_unique_rooms)
+    
+    # for user in current_user.matches:
+    #     User.query.filter_by(id=uid)
     #I believe the commented out code is never touched
 
     # if form.validate_on_submit():

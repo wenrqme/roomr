@@ -12,25 +12,47 @@
                     <h3 id="bartitle"><b>roomr</b></h3>
                 </div>
                 <div id="barlinks">
-                    <a href="{{url_for('home')}}" id="baritem">Home</a> 
-                        <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                        <a href="{{url_for('home')}}" id="baritem">Home</a> 
                         {% if current_user.is_authenticated %}
-                            <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
-                            <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
                             <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
+                            <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                            <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                            <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
+                            <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                         {% else %}
-                            <a href="{{url_for('login')}}" id="baritem">Login</a> 
-                            <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
-                        {% endif %}   
+                            <a href="{{url_for('login')}}" id="baritem">Login</a>
+                            <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
+                        {% endif %}     
                 </div>
             </nav>
         <div class="content" >
-            <h1>Login to your chatroom here!</h1>
+            <h1>Your Matches</h1>
             <form method="GET">
-                
-                {% for room in chatroom %}
-                    <a href="{{url_for('privatechat', email = room)}}">{{ room }} </a><br>
-                {% endfor %}                    
+
+                {% for user in current_user.matches %}
+                <a href="{{ url_for('privatechat', email = user.email) }}">
+                    <div class="matchProfile"> 
+                            <br>
+                            <table>
+                                <tr>
+                                    <td style="width:40%;">
+                                        <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:30%;" >
+                                    </td>
+                                    <td style="width:30%;">
+                                        {{ user.fname }} {{ user.lname }}
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            
+                            <!-- <a href="{{ url_for('privatechat', email = user.email) }}"> Chat with {{ user.fname }}! </a> -->
+                            <br>
+                    </div>
+                </a>
+                <br>
+
+                {% endfor %}   
+              
             </form>
         </div>
     </body>

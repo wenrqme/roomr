@@ -15,11 +15,11 @@
         <div id="barlinks">
                 <a href="{{url_for('home')}}" id="baritem">Home</a> 
                 {% if current_user.is_authenticated %}
+                    <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                     <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
-                    <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a>
+                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
@@ -31,12 +31,20 @@
     <div class="content" >
         {% if current_user.is_authenticated %}
             <h1> My Suggested Users </h1>
-            <div class="slideshow">
+            <!-- <div class="slideshow"> -->
+                {% if not users%}
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <h3 style="text-align: center;"> We couldn't find anyone for you! </h3>
+                {% endif %}
                 {% for user in users %}
                 <div class="suggestedMatches">
-                    <h2><div id="topright"> {{loop.index}} </div></h2>
+                    <!-- <h2><div id="topright"> {{loop.index}} </div></h2> -->
                     <h2 id="matchAmount"> {{ user.fname|capitalize }} is <b>{{ points[user.email] }}%</b> compatible! </h2>
-                    <p><a href="{{ url_for('privatechat', email = user.email) }}"> Chat with {{ user.fname }}! </a></p>
+                    <!-- <p><a href="{{ url_for('privatechat', email = user.email) }}"> Chat with {{ user.fname }}! </a></p> -->
                     <div class="profile"> 
                             <br>
                             <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:70%;" >
@@ -80,8 +88,8 @@
 
                             <br>
                             <form>
-                                <button type="submit" class="homeButton" formaction="{{ url_for('dislike', uid=user.id)}}">Dislike</button>
-                                <button type="submit" class="homeButton" formaction="{{ url_for('like', uid=user.id)}}">Like</button>
+                                <button type="submit" id="dislikeButton" class="homeButton" formaction="{{ url_for('dislike', uid=user.id)}}">Dislike</button>
+                                <button type="submit" id="likeButton" class="homeButton" formaction="{{ url_for('like', uid=user.id)}}">Like</button>
 
                             </form>
                             <br>
@@ -124,9 +132,9 @@
                     </p> -->
                 </div>
                 {% endfor %}
-                <a class="prev" onclick="plusMatches(-1)">&#10094;</a>
-                <a class="next" onclick="plusMatches(1)">&#10095;</a>
-            </div>
+                <!-- <a class="prev" onclick="plusMatches(-1)">&#10094;</a> -->
+                <!-- <a class="next" onclick="plusMatches(1)">&#10095;</a> -->
+            <!-- </div> -->
             <script type="text/javascript">
                 var matchIndex = 1;
                 showMatches(matchIndex);

@@ -35,7 +35,7 @@
                 socket.emit('left', {}, function() {
                     socket.disconnect();
                     // go back to the login page
-                    window.location.href = "{{ url_for('home') }}";
+                    window.location.href = "{{ url_for('chatform') }}";
                 });
             }
         </script>
@@ -49,28 +49,30 @@
             </div>
             <div id="barlinks">
                     <a href="{{url_for('home')}}" id="baritem">Home</a> 
-                    {% if current_user.is_authenticated %}
-                        <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                        <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
-                        <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
-                        <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
-                    {% else %}
-                        <a href="{{url_for('login')}}" id="baritem">Login</a> 
-                        <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
-                    {%endif%}
+                {% if current_user.is_authenticated %}
+                    <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
+                    <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
+                    <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a>
+                {% else %}
+                    <a href="{{url_for('login')}}" id="baritem">Login</a>
+                    <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
+                {% endif %}   
                 </div>
         </nav>
-    
         <div class="content">
             <h1> Private chat with {{ user.fname.capitalize() }}</h1>
-            <textarea id="chat" cols="80" rows="20">
-                {% for msg in messages %}
-                    {{msg}}
-                {% endfor %}
-
-            </textarea><br><br>
-            <input id="text" size="80" placeholder="Enter your message here"><br><br>
-            <a href="#" onclick="leave_room();">Leave this room</a>
+            <a href="#" onclick="leave_room();"> << back to matches</a>
+            <br>
+            <br>
+<textarea id="chat" cols="80" rows="20" readonly style="line-height: 20px;">
+{% for msg in messages %}
+{{msg}}{% endfor %}
+</textarea><br><br>
+            <input id="chatInput" type="text" size="80" placeholder="Enter your message here">
+            <br><br>
+        
         </div>
 
     </body>
