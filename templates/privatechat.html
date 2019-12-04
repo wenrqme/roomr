@@ -62,16 +62,65 @@
                 </div>
         </nav>
         <div class="content">
+            <div style="float:left;">
             <h1> Private chat with {{ user.fname.capitalize() }}</h1>
             <a href="#" onclick="leave_room();"> << back to matches</a>
             <br>
             <br>
-<textarea id="chat" cols="80" rows="20" readonly style="line-height: 20px;">
+<textarea id="chat" cols="80" rows="20" readonly style="line-height: 20px;width:500px;">
 {% for msg in messages %}
 {{msg}}{% endfor %}
 </textarea><br><br>
             <input id="text" type="text" size="80" placeholder="Enter your message here" style="width:500px;">
             <br><br>
+        </div>
+        <br>
+        <br>
+        <br>
+
+        <div class="profile" style="float:left;margin-left:50px;"> 
+                <br>
+                <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:70%;" >
+                <h1>{{ user.fname }} {{ user.lname }}</h1>
+                <div class="col1">
+                    <span id = "quest"> {{user.gender.capitalize()}} </span> 
+                    <span id = "response">Age: {{ user.dob.today().year - user.dob.year }}</span>
+                    <br>
+                    <div>{{user.city}}, {{user.state}}</div>
+                    <br>
+                </div>
+                <div id="bio"> Bio: <br> {{user.bio}} </div>
+                <br>
+                <div class="col2"> 
+                    <div> 
+                        <span id="quest">Smoker:</span> <span id="response">{{user.smoker.capitalize()}} </span>
+                        {% if current_user.smoker == user.smoker %} &nbsp;
+                            <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                    </div>
+                    <div> 
+                        <span id="quest">Sleep Pattern:</span> <span id="response">{{user.sleep.capitalize()}} </span>
+                        {% if current_user.sleep == user.sleep %}
+                            <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                    </div>
+                    <div> 
+                        <span id="quest">Cleanliness:</span> <span id="response">{{user.cleanliness.capitalize()}} </span>
+                        {% if current_user.cleanliness == user.cleanliness %} &nbsp;
+                            <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <br>
+
+                </div>
+            </div>
         
         </div>
 
