@@ -27,10 +27,9 @@
         <div class="content" >
             <h1>Login to your chatroom here!</h1>
             <form method="GET">
+                
                 {% for room in chatroom %}
-                    {% set splitString = room.split(" ") %}
-                    {{ splitString }}
-                    <a href="{{url_for('privatechat', email = user.email)}}">{{ room }} </a>
+                    <a href="{{url_for('privatechat', email = room)}}">{{ room }} </a><br>
                 {% endfor %}                    
             </form>
         </div>

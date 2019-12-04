@@ -471,19 +471,19 @@ def viewProfile(email):
 def user():
     return render_template("user.html")
 
-#chat room page
-@app.route('/chats')
-@login_required
-def chats():
-    # room = session.get('room', '')
-    # name = session.get('name', '')
-    # #messages to be changed to the actual messages in the chat
-    # messages = History.query.filter_by(chatroom=room).all()
-    # messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
-    # print(messages)
+# #chat room page
+# @app.route('/chats')
+# @login_required
+# def chats():
+#     # room = session.get('room', '')
+#     # name = session.get('name', '')
+#     # #messages to be changed to the actual messages in the chat
+#     # messages = History.query.filter_by(chatroom=room).all()
+#     # messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
+#     # print(messages)
 
 
-    return render_template('privatechat.html', name=name, room=room, messages=messages)
+#     return render_template('privatechat.html', name=name, room=room, messages=messages)
 
 #private chat room page
 @app.route('/privatechat/<email>')
@@ -510,6 +510,7 @@ def privatechat(email):
 @login_required
 def chatform():
     form = ChatForm()
+    #need to query library.db for the matching table
     your_rooms = [chat.chatroom for chat in History.query.filter_by(fromID=current_user.id).all()]
     additional = [chat.chatroom for chat in History.query.filter_by(toID=current_user.id).all()]
     your_rooms.extend(additional)
@@ -518,24 +519,31 @@ def chatform():
         if i not in unique_rooms:
             unique_rooms.append(i)
     print(unique_rooms)
-    messages = ['hi', 'hi']
-    if form.validate_on_submit():
-        session['room'] = form.room.data
-        email = "Not Assigned"
-        for i in session['room'].split(" "):
-            if i != current_user.email:
-                email = i
-        print(email)
-        session['name'] = current_user.fname
-        messages = History.query.filter_by(chatroom=session['room']).all()
-        messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
-        return redirect(url_for('.privatechat', email=email))
-    elif request.method == 'GET':
-        form.room.data = session.get('room')
-    #change this line to the privatechat room link location
-    unique_rooms = [[room.split(" ")] for room in unique_rooms]
-    print(unique_rooms)
-    return render_template('chatform.html', form=form, user=current_user, chatroom=unique_rooms)
+    # messages = ['hi', 'hi']
+    modified_unique_rooms = []
+    for room in unique_rooms:
+        word = room.split(" ")
+        for w in word:
+            if w != current_user.email:
+                modified_unique_rooms.append(w)
+    print(modified_unique_rooms)
+    #I believe the commented out code is never touched
+
+    # if form.validate_on_submit():
+    #     session['room'] = form.room.data
+    #     email = "Not Assigned"
+    #     for i in session['room'].split(" "):
+    #         if i != current_user.email:
+    #             email = i
+    #     print(email)
+    #     session['name'] = current_user.fname
+    #     messages = History.query.filter_by(chatroom=session['room']).all()
+    #     messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
+    #     return redirect(url_for('.privatechat', email=email))
+    # elif request.method == 'GET':
+    #     form.room.data = session.get('room')
+    #modified_unique_rooms shows the email of the user who is not the current_user
+    return render_template('chatform.html', form=form, user=current_user, chatroom=modified_unique_rooms)
 
 
 @app.route("/confirm/<string:token>")
@@ -569,8 +577,15 @@ def findSuggestions():
         users = User.query.filter(or_(User.gender=="male", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.state==current_user.state, User.city==current_user.city, User.id!=current_user.id).all()
     elif current_user.genderPreferences == "female":
         users = User.query.filter(or_(User.gender=="female", User.gender=="other"), or_(User.genderPreferences==current_user.gender, User.genderPreferences=="any"), User.state==current_user.state, User.city==current_user.city, User.id!=current_user.id).all()
+    
+    show_users = []
+    print(users)
+    for user in users:
+        if (not user in current_user.likes) and (not user in current_user.dislikes):
+            show_users.append(user)
+    print(show_users)
 
-    return users
+    return show_users
 
 @app.route('/like/<int:uid>', methods=["GET", "POST"])
 def like(uid):
