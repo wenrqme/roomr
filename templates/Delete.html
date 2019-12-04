@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> roomr - edit profile </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    </head>
+    <body>
+        <nav id="sidebar"><br>
+            <div id="headercontainer">
+                <h3 id="bartitle"><b>roomr</b></h3>
+            </div>
+            <div id="barlinks">
+                <a href="{{url_for('home')}}" id="baritem">Home</a> 
+                <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                {% if current_user.is_authenticated %}
+                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                    <a href="{{url_for('chatform')}}" id="baritem" >Chat</a>
+                    <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a>
+
+                {% else %}
+                    <a href="{{url_for('login')}}" id="baritem">Login</a> 
+                    <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
+                {%endif%}   
+            </div>
+        </nav>
+        <div class="content" >
+       <div>
+            <form method="POST">
+                    <label class="control control-checkbox">
+                            Delete{{ form.Delete() }}
+                            <div class="control_indicator"></div>
+                    </label>
+                    <div id="logSub">
+                            {{ form.Submit() }}
+                        </div>
+           </form>
+        </div>
+        </div>
+    </body>
+</html>

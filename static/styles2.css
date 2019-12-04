@@ -137,6 +137,7 @@ body {
 	margin: auto;
 	width: 40%;
 }
+
 /**/
 /* CODE FOR FLIPPING THROUGH SUGGESTED MATCHES 
 (credit to https://www.w3schools.com/howto/howto_js_slideshow_gallery.asp) */
@@ -308,19 +309,19 @@ label {
   }
 
   #answ {
-	  width: 40%;
+	  width: 60%;
 	  float: left;
 	  /* height: 80%; */
 	  /* height: 30px; */
   }
 
   #question {
-	  width:50%;
+	  width:40%;
 	height: 20px;
 }
 
   #ansSel {
-	  height: 40px;
+	  height: 50px;
   }
 
 #pic {
@@ -387,6 +388,32 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
+	/* border: 1px solid #555; */
+	background-color: #607d8b;
+	color: white;
+	box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+
+.homeButton {
+	background-color: #f1f1f1;
+	/* border-radius: 4rem; */
+	color: rgb(0, 0, 0);
+	cursor: pointer;
+	display: inline-block;
+	font-family: 'Poppins', sans-serif;
+	font-size: 1rem;
+	/* font-weight: 700; */
+	height: 30px;
+	line-height: 20px;
+	padding-left: 30px;
+	padding-right: 30px;
+	/* transition: background-color 0.3s; */
+	transition-duration: 0.3s;
+	/* transition: border 0.3s; */
+	/* text-align: center; */
+}
+
+.homeButton:hover {
 	/* border: 1px solid #555; */
 	background-color: #607d8b;
 	color: white;

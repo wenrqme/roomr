@@ -94,6 +94,18 @@ app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(appdir, 'profile-pictures') # 
 """
 User Class & Password Hashing
 """
+user_likes = db.Table('likes',
+    db.Column('user_id', db.Integer, db.ForeignKey("Users.id"), primary_key=True),
+    db.Column('like_id', db.Integer, db.ForeignKey('Users.id'), primary_key=True))
+
+user_dislikes = db.Table('dislikes',
+    db.Column('user_id', db.Integer, db.ForeignKey("Users.id"), primary_key=True),
+    db.Column('dislike_id', db.Integer, db.ForeignKey('Users.id'), primary_key=True))
+
+user_matches = db.Table('matches',
+    db.Column('user_id', db.Integer, db.ForeignKey("Users.id"), primary_key=True),
+    db.Column('match_id', db.Integer, db.ForeignKey('Users.id'), primary_key=True))
+
 class User(UserMixin, db.Model):
     __tablename__ = "Users"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -113,6 +125,22 @@ class User(UserMixin, db.Model):
     sleep = db.Column(db.String(5), index=True, nullable=False)
     genderPreferences = db.Column(db.String(3), index=True, nullable=False)
     cleanliness = db.Column(db.String(5), index = True, nullable = False)
+
+    likes = db.relationship("User", 
+                        secondary=user_likes,
+                        primaryjoin=(id==user_likes.c.user_id),
+                        secondaryjoin=(id==user_likes.c.like_id),
+                        backref='liked_by')
+    dislikes = db.relationship("User", 
+                        secondary=user_dislikes,
+                        primaryjoin=(id==user_dislikes.c.user_id),
+                        secondaryjoin=(id==user_dislikes.c.dislike_id),
+                        backref='disliked_by')
+    matches = db.relationship("User", 
+                        secondary=user_matches,
+                        primaryjoin=(id==user_matches.c.user_id),
+                        secondaryjoin=(id==user_matches.c.match_id),
+                        backref='matched_by')
 
     # likes = relationship("Likes", secondary=likes_association_table)
 
@@ -182,6 +210,11 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField("Keep me logged in")
     submit = SubmitField("Submit")
 
+class DeleteForm(FlaskForm):
+    # email = StringField("Email", validators=[DataRequired(), Email()])
+    Delete = BooleanField("Delete")
+    Submit = SubmitField('Submit')
+
 class SignupForm(FlaskForm):
     fname = StringField("First Name", validators=[DataRequired()])
     lname = StringField("Last Name", validators=[DataRequired()])
@@ -245,6 +278,7 @@ class ChatForm(FlaskForm):
 """
 roomr pages
 """
+
 #home page
 @app.route('/', methods=["GET"])
 def home():
@@ -340,6 +374,8 @@ def login():
         flash("Invalid Username or password.")
     return render_template("login.html", form=form)
 
+
+
 def send_email(to, subject, template, User, token):
     me = app.config["MAIL_USERNAME"]
     to = User.email
@@ -361,6 +397,25 @@ def logout():
     flash("you have been logged out")
     return redirect(url_for("login"))
 
+@app.route("/user/delete", methods=['GET', 'POST'])
+@login_required
+def Delete():
+    form = DeleteForm()
+    # email = None 
+    if form.validate_on_submit():
+        # email = form.email.data
+        print("delete: " + current_user)
+
+        if form.Delete.data:
+            print("validated")
+            # obj = User.query.filter_by(email=form.email.data).first()
+            # db.session.delete(obj)
+            # db.session.commit()
+            flash("Your account has been successfully deleted", "success")
+            return redirect(url_for("login"))
+
+    return render_template("Delete.html", form=form)
+    
 #edit profile page
 @app.route("/user/edit", methods=["GET","POST"])
 @login_required
@@ -478,7 +533,10 @@ def chatform():
     elif request.method == 'GET':
         form.room.data = session.get('room')
     #change this line to the privatechat room link location
-    return render_template('chats.html', form=form, user=current_user)
+    unique_rooms = [[room.split(" ")] for room in unique_rooms]
+    print(unique_rooms)
+    return render_template('chatform.html', form=form, user=current_user, chatroom=unique_rooms)
+
 
 @app.route("/confirm/<string:token>")
 @login_required
@@ -514,7 +572,32 @@ def findSuggestions():
 
     return users
 
-    # print(users)
+@app.route('/like/<int:uid>', methods=["GET", "POST"])
+def like(uid):
+    print(uid)
+    otherUser = User.query.filter_by(id=uid).first()
+    current_user.likes.append(otherUser)
+    
+    print(current_user.likes)
+    if current_user in otherUser.likes:
+        current_user.matches.append(otherUser)
+        otherUser.matches.append(current_user)
+
+    db.session.add(current_user)
+    db.session.commit()
+    
+    return redirect(url_for('home'))
+
+@app.route('/dislike/<int:uid>', methods=["GET", "POST"])
+def dislike(uid):
+    print(uid)
+    otherUser = User.query.filter_by(id=uid).first()
+    current_user.dislikes.append(otherUser)
+    db.session.add(current_user)
+    db.session.commit()
+    print(current_user.dislikes)
+    return redirect(url_for('home'))
+
 
 #calculating percentage match for soft preferences
 def softPreferences(users):
