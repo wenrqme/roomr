@@ -425,7 +425,8 @@ def editProfile():
 
     prefill = {'state': str(user.state), 'city': str(user.city), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
     form = ProfileForm(data=prefill)
-    form.city.choices = [(city, city) for city in cities[str(user.state)]]
+    #form.city.choices = [(city, city) for city in cities[str(user.state)]]
+    form.city.choices = [(city, city) for city in cities[form.state.data]]
     # form.city.choices = allCities
     #form.city.data = user.city
 
@@ -441,6 +442,7 @@ def editProfile():
 
         user.state = form.state.data    
         user.city = form.city.data
+        print("state:", user.state, "city:", user.city)
         user.gender = form.gender.data
         user.bio = form.bio.data
         user.smoker = form.smoker.data
