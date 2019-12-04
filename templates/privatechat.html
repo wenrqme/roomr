@@ -53,7 +53,7 @@
                         <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
                         <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
                         <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
-                        <a href="{{url_for('chatform')}}" id="baritem" >Chat</a>
+                        <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                     {% else %}
                         <a href="{{url_for('login')}}" id="baritem">Login</a> 
                         <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
@@ -63,7 +63,12 @@
     
         <div class="content">
             <h1> Private chat with {{ user.fname.capitalize() }}</h1>
-            <textarea id="chat" cols="80" rows="20"></textarea><br><br>
+            <textarea id="chat" cols="80" rows="20">
+                {% for msg in messages %}
+                    {{msg}}
+                {% endfor %}
+
+            </textarea><br><br>
             <input id="text" size="80" placeholder="Enter your message here"><br><br>
             <a href="#" onclick="leave_room();">Leave this room</a>
         </div>

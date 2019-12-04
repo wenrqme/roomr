@@ -1,107 +1,111 @@
-
 /*Based on CSS from https://www.w3schools.com/w3css/tryw3css_templates_interior_design.htm */
 
-body,h1,h2,h3,h4,h5 {
+body,
+h1,
+h2,
+h3,
+h4,
+h5 {
 	font-family: "Poppins", sans-serif;
 	/*font-family: Helvetica, Arial, sans-serif;*/
-
 }
 body {
-	font-size:16px;
-	margin:0;
+	font-size: 16px;
+	margin: 0;
 }
 
 .content {
-	margin-left:340px;
-	margin-right:40px;
+	margin-left: 340px;
+	margin-right: 40px;
 	/* transition:margin-left .4s; */
 }
 
-#sidebar{
-	height:100%;
-	width:200px;
-	background-color:#fff;
-	position:fixed!important;
-	z-index:1;
-	overflow:auto;
-	z-index:3;
-	font-weight:bold;
-	color:#fff!important;
-	background-color:#607d8b!important;
-	top:0;
-	font-size:18px!important;
-	padding:8px 16px!important;
+#sidebar {
+	height: 100%;
+	width: 200px;
+	background-color: #fff;
+	position: fixed !important;
+	z-index: 1;
+	overflow: auto;
+	z-index: 3;
+	font-weight: bold;
+	color: #fff !important;
+	background-color: #607d8b !important;
+	top: 0;
+	font-size: 18px !important;
+	padding: 8px 16px !important;
 }
 
-#headercontainer:after,#headercontainer:before {
-	content:"";
-	display:table;
-	clear:both;
-	padding:0.01em 16px;
+#headercontainer:after,
+#headercontainer:before {
+	content: "";
+	display: table;
+	clear: both;
+	padding: 0.01em 16px;
 }
 
-#bartitle{
-	text-align:center;
-	padding-top:64px!important;
-	padding-bottom:64px!important;
+#bartitle {
+	text-align: center;
+	padding-top: 64px !important;
+	padding-bottom: 64px !important;
 }
 
 #barlinks {
-	width:100%;
-	min-width:100%;
-	text-align:left;
-	display:block;
-	padding:8px 16px;
-	border:none;
-	white-space:normal;
-	float:none;
-	outline:0;
+	width: 100%;
+	min-width: 100%;
+	text-align: left;
+	display: block;
+	padding: 8px 16px;
+	border: none;
+	white-space: normal;
+	float: none;
+	outline: 0;
 }
 
 #baritem {
-	text-align:left;
-	width:100%;
+	text-align: left;
+	width: 100%;
 	/* display:inline-block; */
-	float:left;
-	border:none;
-	outline:0;
-	padding:8px 16px;
-	vertical-align:middle;
-	overflow:hidden;
-	text-decoration:none;
-	color:inherit;
-	background-color:inherit;
-	cursor:pointer;
-	white-space:nowrap;
+	float: left;
+	border: none;
+	outline: 0;
+	padding: 8px 16px;
+	vertical-align: middle;
+	overflow: hidden;
+	text-decoration: none;
+	color: inherit;
+	background-color: inherit;
+	cursor: pointer;
+	white-space: nowrap;
 }
 
 #baritem:hover {
-	color:#000!important;
-	background-color:#ccc!important;
+	color: #000 !important;
+	background-color: #ccc !important;
 }
 
 /* used for dislpaying the numbers in the suggested match boxes */
 #topright {
-  position: absolute;
-  top: 40px;
-  right: 40px;
-  background: #607d8b;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  padding: 8px;
-  color: #fff;
-  text-align: center;
+	position: absolute;
+	top: 40px;
+	right: 40px;
+	background: #607d8b;
+	border-radius: 50%;
+	width: 36px;
+	height: 36px;
+	padding: 8px;
+	color: #fff;
+	text-align: center;
 }
 
-.error{
-    color: red;
-    font-weight: bold;
+.error {
+	color: red;
+	font-weight: bold;
 }
 
-.alert{
-    color: orange;
-    font-weight: bold;
+.alert {
+	color: orange;
+	font-weight: bold;
 }
 
 .profile {
@@ -109,12 +113,12 @@ body {
 	max-width: 500px;
 	margin: auto;
 	text-align: center;
-  }
+}
 
 #bio {
-	  width: 75%;
-	  margin: auto;
-  }
+	width: 75%;
+	margin: auto;
+}
 
 #quest {
 	float: left;
@@ -140,22 +144,22 @@ body {
 
 /* class for displaying the suggested matches */
 .suggestedMatches {
-  	border-radius: 30px;
-  	border: 5px solid #607d8b;
- 	padding: 40px;
-  	display:inline-block;
+	border-radius: 30px;
+	border: 5px solid #607d8b;
+	padding: 40px;
+	display: inline-block;
 }
 
 /* Position the container (needed to position the left and right arrows) */
 .slideshow {
 	position: relative;
 	/* padding-top:64px; */
-	padding-bottom:64px;
+	padding-bottom: 64px;
 }
 
 /* Add a pointer when hovering over the thumbnail images */
 .cursor {
-  	cursor: pointer;
+	cursor: pointer;
 }
 
 /* slideshow container */
@@ -163,38 +167,36 @@ body {
 	max-width: 1000px;
 	position: relative;
 	margin: auto;
-	
 }
 
 /* Next & previous buttons */
-.prev, .next {
-  	cursor: pointer;
-  	position: absolute;
-  	top: 50%;
-  	width: auto;
-  	margin-top: -22px;
-  	padding: 16px;
-  	color: black;
-  	font-weight: bold;
-  	font-size: 18px;
-  	transition: 0.6s ease;
-  	border-radius: 0 6px 6px 0;
-  	user-select: none;
+.prev,
+.next {
+	cursor: pointer;
+	position: absolute;
+	top: 50%;
+	width: auto;
+	margin-top: -22px;
+	padding: 16px;
+	color: black;
+	font-weight: bold;
+	font-size: 18px;
+	transition: 0.6s ease;
+	border-radius: 0 6px 6px 0;
+	user-select: none;
 }
 
 /* Position the "next button" to the right */
 .next {
-  	right: 0;
-  	border-radius: 3px 0 0 3px;
+	right: 0;
+	border-radius: 3px 0 0 3px;
 }
-
 
 #matchAmount {
 	text-align: center;
 }
 
-
-input[type=text]{
+input[type=text] {
 	width: 40%;
 	padding: 12px 20px;
 	margin: 8px 0;
@@ -203,9 +205,9 @@ input[type=text]{
 	-webkit-transition: 0.5s;
 	transition: 0.5s;
 	outline: none;
-  }
+}
 
-  input[type=email]{
+input[type=email] {
 	width: 81%;
 	padding: 12px 20px;
 	margin: 8px 0;
@@ -214,10 +216,10 @@ input[type=text]{
 	-webkit-transition: 0.5s;
 	transition: 0.5s;
 	outline: none;
-  }
+}
 
-  input[type=date]{
-	font-family:"Poppins", sans-serif;
+input[type=date] {
+	font-family: "Poppins", sans-serif;
 	width: 100%;
 	padding: 12px 20px;
 	margin: 8px 0;
@@ -226,10 +228,10 @@ input[type=text]{
 	-webkit-transition: 0.5s;
 	transition: 0.5s;
 	outline: none;
-  }
+}
 
-  input[type=password]{
-	font-family:"Poppins", sans-serif;
+input[type=password] {
+	font-family: "Poppins", sans-serif;
 	width: 100%;
 	padding: 12px 20px;
 	margin: 8px 0;
@@ -238,16 +240,19 @@ input[type=text]{
 	-webkit-transition: 0.5s;
 	transition: 0.5s;
 	outline: none;
-  }
+}
 
-  
-  input[type=text]:focus, input[type=email]:focus, 
-  input[type=date]:focus, input[type=password]:focus, 
-  textarea:focus, select:focus, input[type=checkbox] {
+input[type=text]:focus,
+input[type=email]:focus,
+input[type=date]:focus,
+input[type=password]:focus,
+textarea:focus,
+select:focus,
+input[type=checkbox] {
 	border: 3px solid #555;
-  }
+}
 
-  textarea {
+textarea {
 	width: 100%;
 	height: 150px;
 	padding: 12px 20px;
@@ -259,10 +264,10 @@ input[type=text]{
 	-webkit-transition: 0.5s;
 	transition: 0.5s;
 	outline: none;
-  }
+}
 
 select {
-	font-family:"Poppins", sans-serif;
+	font-family: "Poppins", sans-serif;
 	width: 100%;
 	height: 50px;
 	padding: 16px 20px;
@@ -272,60 +277,58 @@ select {
 	-webkit-transition: 0.5s;
 	transition: 0.5s;
 	outline: none;
-  }
+}
 
 #genderSelect {
-	font-family:"Poppins", sans-serif;
+	font-family: "Poppins", sans-serif;
 	width: 50%;
 	/* padding: 16px 20px; */
 	border: none;
 	border-radius: 4px;
 	/* background-color: #f1f1f1; */
-  }
-
+}
 
 label {
 	padding: 12px 12px 12px 0;
 	display: inline-block;
-  }
-  
-  #signupForm {
+}
+
+#signupForm {
 	width: 700px;
-  }
+}
 
-  table {
-	  width: 81%;
-  }
+table {
+	width: 81%;
+}
 
-  #pref{
-	  text-align: right;
-	  width: 81%;
-	  
-  }
+#pref {
+	text-align: right;
+	width: 81%;
+}
 
-  #answ {
-	  width: 30%;
-	  float: left;
-	  /* height: 80%; */
-	  /* height: 30px; */
-  }
+#answ {
+	width: 30%;
+	float: left;
+	/* height: 80%; */
+	/* height: 30px; */
+}
 
-  #question {
-	  width:50%;
+#question {
+	width: 50%;
 	height: 20px;
-  }
+}
 
-  #ansSel {
-	  height: 30px;
-  }
+#ansSel {
+	height: 30px;
+}
 
-  #pic {
-	  width: 81%;
-	  text-align:center;
-	  /* text-align: center; */
-  }
+#pic {
+	width: 81%;
+	text-align: center;
+	/* text-align: center; */
+}
 
-  [type="file"] {
+[type="file"] {
 	border: 0;
 	clip: rect(0, 0, 0, 0);
 	height: 1px;
@@ -333,10 +336,10 @@ label {
 	padding: 0;
 	position: absolute !important;
 	white-space: nowrap;
-	width: 1px; 
-  }
+	width: 1px;
+}
 
-  [type="file"] + label {
+[type="file"] + label {
 	background-color: #f1f1f1;
 	/* border-radius: 4rem; */
 	color: rgb(0, 0, 0);
@@ -350,20 +353,20 @@ label {
 	padding-left: 30px;
 	padding-right: 30px;
 	transition: background-color 0.3s;
-  }
-   
-  [type="file"]:focus + label,
-  [type="file"] + label:hover {
-	  background-color: #555;
-	  color: white;
-  }
-   
-  [type="file"]:focus + label {
+}
+
+[type="file"]:focus + label,
+[type="file"] + label:hover {
+	background-color: #555;
+	color: white;
+}
+
+[type="file"]:focus + label {
 	outline: 1px dotted #000;
 	outline: -webkit-focus-ring-color auto 5px;
-  }
+}
 
-  input[type=submit]{
+input[type=submit] {
 	background-color: #f1f1f1;
 	/* border-radius: 4rem; */
 	color: rgb(0, 0, 0);
@@ -380,38 +383,34 @@ label {
 	transition-duration: 0.3s;
 	/* transition: border 0.3s; */
 	/* text-align: center; */
-  }
-
-  input[type=submit]:hover {
-	/* border: 1px solid #555; */
-	background-color: #607d8b;
-	  color: white;
-	  box-shadow: 0 6px 8px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-  }
-
-  #loginTable{
-	  width: 460px;
-  }
-
-  #loginLabel{
-	width:30%;
-	text-align: left;
-  }
-
-
-  #loginField input{
-	margin-left: 5px;
-	width:60%;
-	height:40px;
-  }
-
-#logSub {
-	width:20%;
-	text-align: center;
 }
 
+input[type=submit]:hover {
+	/* border: 1px solid #555; */
+	background-color: #607d8b;
+	color: white;
+	box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
 
+#loginTable {
+	width: 460px;
+}
 
+#loginLabel {
+	width: 30%;
+	text-align: left;
+}
+
+#loginField input {
+	margin-left: 5px;
+	width: 60%;
+	height: 40px;
+}
+
+#logSub {
+	width: 20%;
+	text-align: center;
+}
 
 /* 
 	CHECKBOX CSS
@@ -419,14 +418,14 @@ label {
 
 */
 .control {
-    font-family: arial;
-    display: block;
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 5px;
-    padding-top: 3px;
-    cursor: pointer;
-    font-size: 16px;
+	font-family: arial;
+	display: block;
+	position: relative;
+	padding-left: 30px;
+	margin-bottom: 5px;
+	padding-top: 3px;
+	cursor: pointer;
+	font-size: 16px;
 }
 .control input {
 	position: absolute;
@@ -434,66 +433,66 @@ label {
 	opacity: 0;
 }
 .control_indicator {
-position: absolute;
-top: 2px;
-left: 0;
-height: 20px;
-width: 20px;
-background: #e6e6e6;
-border: 0px solid #000000;
-border-radius: 0px;
+	position: absolute;
+	top: 2px;
+	left: 0;
+	height: 20px;
+	width: 20px;
+	background: #e6e6e6;
+	border: 0px solid #000000;
+	border-radius: 0px;
 }
 .control:hover input ~ .control_indicator,
 .control input:focus ~ .control_indicator {
-    background: #cccccc;
+	background: #cccccc;
 }
 
 .control input:checked ~ .control_indicator {
-    background: #607d8b;
+	background: #607d8b;
 }
 .control:hover input:not([disabled]):checked ~ .control_indicator,
 .control input:checked:focus ~ .control_indicator {
-    background: #0e6647d;
+	background: #0e6647d;
 }
 .control input:disabled ~ .control_indicator {
-    background: #e6e6e6;
-    opacity: 0.6;
-    pointer-events: none;
+	background: #e6e6e6;
+	opacity: 0.6;
+	pointer-events: none;
 }
 .control_indicator:after {
-    box-sizing: unset;
-    content: '';
-    position: absolute;
-    display: none;
+	box-sizing: unset;
+	content: '';
+	position: absolute;
+	display: none;
 }
 .control input:checked ~ .control_indicator:after {
-    display: block;
+	display: block;
 }
 .control-checkbox .control_indicator:after {
-    left: 8px;
-    top: 4px;
-    width: 3px;
-    height: 8px;
-    border: solid #ffffff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+	left: 8px;
+	top: 4px;
+	width: 3px;
+	height: 8px;
+	border: solid #ffffff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
 }
 .control-checkbox input:disabled ~ .control_indicator:after {
-    border-color: #7b7b7b;
+	border-color: #7b7b7b;
 }
 .control-checkbox .control_indicator::before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4.5rem;
-    height: 4.5rem;
-    margin-left: -1.3rem;
-    margin-top: -1.3rem;
-    background: #2aa1c0;
-    border-radius: 3rem;
-    opacity: 0.6;
-    z-index: 99999;
-    transform: scale(0);
+	content: '';
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 4.5rem;
+	height: 4.5rem;
+	margin-left: -1.3rem;
+	margin-top: -1.3rem;
+	background: #2aa1c0;
+	border-radius: 3rem;
+	opacity: 0.6;
+	z-index: 99999;
+	transform: scale(0);
 }

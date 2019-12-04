@@ -81,12 +81,14 @@ Database Stuff
 appdir = os.path.abspath(os.path.dirname(__file__))
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(appdir, 'library.db')}"
+app.config["SQLALCHEMY_BINDS"] = {
+    'history': f"sqlite:///{os.path.join(appdir, 'history.db')}"
+}
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(appdir, 'profile-pictures') # you'll need to create a folder named uploads
-
 
 
 """
@@ -145,7 +147,15 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         db.session.commit()
         return True
-    
+
+
+
+class History(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    fromID = db.Column(db.Integer, db.ForeignKey('Users.id'))
+    toID = db.Column(db.Integer)
+    msg = db.Column(db.String(500))
+    chatroom = db.Column(db.String(500))
 
 db.create_all()
 
@@ -394,36 +404,68 @@ def user():
     return render_template("user.html")
 
 #chat room page
-@app.route('/chat')
+@app.route('/chats')
 @login_required
-def chat():
-    room = session.get('room', '')
-    name = session.get('name', '')
-    return render_template('chat.html', name=name, room=room)
+def chats():
+    # room = session.get('room', '')
+    # name = session.get('name', '')
+    # #messages to be changed to the actual messages in the chat
+    # messages = History.query.filter_by(chatroom=room).all()
+    # messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
+    # print(messages)
+
+
+    return render_template('privatechat.html', name=name, room=room, messages=messages)
 
 #private chat room page
 @app.route('/privatechat/<email>')
 @login_required
 def privatechat(email):
+    print("private chat function")
     user = User.query.filter_by(email=email).first()
-    room = "".join(sorted([user.email, current_user.email]))
+    room = " ".join(sorted([user.email, current_user.email]))
     name = current_user.fname
     session['room'] = room
     session['name'] = name
-    return render_template('privatechat.html', user=user, name=name, room=room)
+    session['fromID'] = current_user.id
+    session['toID'] = user.id
+    room = session.get('room', '')
+    name = session.get('name', '')
+    #messages to be changed to the actual messages in the chat
+    messages = History.query.filter_by(chatroom=room).all()
+    messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
+    print(messages)
+    return render_template('privatechat.html', user=user, name=name, room=room, messages=messages)
 
 #login page to enter a chatroom
 @app.route('/chatform', methods=["GET", "POST"])
 @login_required
 def chatform():
     form = ChatForm()
+    your_rooms = [chat.chatroom for chat in History.query.filter_by(fromID=current_user.id).all()]
+    additional = [chat.chatroom for chat in History.query.filter_by(toID=current_user.id).all()]
+    your_rooms.extend(additional)
+    unique_rooms = []
+    for i in your_rooms:
+        if i not in unique_rooms:
+            unique_rooms.append(i)
+    print(unique_rooms)
+    messages = ['hi', 'hi']
     if form.validate_on_submit():
         session['room'] = form.room.data
+        email = "Not Assigned"
+        for i in session['room'].split(" "):
+            if i != current_user.email:
+                email = i
+        print(email)
         session['name'] = current_user.fname
-        return redirect(url_for('.chat'))
+        messages = History.query.filter_by(chatroom=session['room']).all()
+        messages = [f"{User.query.filter_by(id=msg.fromID).first().fname}: {msg.msg}" for msg in messages]
+        return redirect(url_for('.privatechat', email=email))
     elif request.method == 'GET':
-        form.room.data = session.get('room', '')
-    return render_template('chatform.html', form=form)
+        form.room.data = session.get('room')
+    #change this line to the privatechat room link location
+    return render_template('chats.html', form=form, user=current_user)
 
 @app.route("/confirm/<string:token>")
 @login_required
@@ -516,6 +558,9 @@ def softPreferences(users):
 """ 
 chat functionality
 """
+
+
+
 #message sent when you enter the chat room
 @socketio.on('joined', namespace='/chat')
 def joined(message):
@@ -527,6 +572,12 @@ def joined(message):
 @socketio.on('text', namespace='/chat')
 def text(message):
     room = session.get('room')
+    toID = session.get('toID')
+    fromID = session.get('fromID')
+    temp_message = History(fromID=fromID, toID=toID, msg=message['msg'], chatroom=room)
+    db.session.add(temp_message)
+    
+    db.session.commit()
     emit('message', {'msg': session.get('name') + ': ' + message['msg']}, room=room)
 
 #message sent when you exit the chat room

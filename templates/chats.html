@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> roomr - your chats </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    </head> 
+    <body>
+        <!-- Sidebar content -->
+            <nav id="sidebar"><br>
+                <div id="headercontainer">
+                    <h3 id="bartitle"><b>roomr</b></h3>
+                </div>
+                <div id="barlinks">
+                    <a href="{{url_for('home')}}" id="baritem">Home</a> 
+                        <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                        {% if current_user.is_authenticated %}
+                            <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                            <a href="{{url_for('logout')}}" id="baritem" >Logout</a> 
+                            <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
+                        {% else %}
+                            <a href="{{url_for('login')}}" id="baritem">Login</a> 
+                            <a href="{{url_for('signup')}}" id="baritem" >Signup</a> 
+                        {% endif %}   
+                </div>
+            </nav>
+        <div class="content" >
+            <h1>View your chatrooms here!</h1>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.room.label }}: {{ form.room() }}
+                <div class="dropdown">
+                        <button class="dropbtn">Dropdown</button>
+                        <div class="dropdown-content">
+                          <a href="#">Link 1</a>
+                          <a href="#">Link 2</a>
+                          <a href="#">Link 3</a>
+                        </div>
+                </div>
+                {% for error in form.room.errors %}{{ error }}{% endfor %}<br>
+                {{ form.submit() }}
+            </form>
+        </div>
+    </body>
+</html>
