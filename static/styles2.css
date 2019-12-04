@@ -295,32 +295,33 @@ label {
 
 #signupForm {
 	width: 700px;
-}
+  }
 
-table {
-	width: 81%;
-}
+  table {
+	  width: 81%;
+  }
 
-#pref {
-	text-align: right;
-	width: 81%;
-}
+  #pref{
+	  text-align: right;
+	  width: 81%;
+	  
+  }
 
-#answ {
-	width: 30%;
-	float: left;
-	/* height: 80%; */
-	/* height: 30px; */
-}
+  #answ {
+	  width: 40%;
+	  float: left;
+	  /* height: 80%; */
+	  /* height: 30px; */
+  }
 
-#question {
-	width: 50%;
+  #question {
+	  width:50%;
 	height: 20px;
 }
 
-#ansSel {
-	height: 30px;
-}
+  #ansSel {
+	  height: 40px;
+  }
 
 #pic {
 	width: 81%;

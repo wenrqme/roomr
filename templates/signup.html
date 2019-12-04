@@ -90,11 +90,15 @@
                     </tr>
                     <tr>
                         <td> {{ form.state() }} </td>
-                        <td> {{ form.city() }}</td>
+                        <!-- <td>
+                            <select id="city" name="city"></select>
+                            
+                        </td> -->
+                        <td>  {{form.city()}} </td>
+
                     </tr>
                 </table>
                 <br>
-                <!-- {{ form.city.label }} : {{ form.city() }} <br> -->
 
                 <table style="width:108%">
                     <tr>
@@ -170,13 +174,14 @@
                             var optionHTML = '';
         
                             for (var city of data.cities) {
-                                optionHTML += '<option value="' + city.state + '">' + city.name + '</option>';
+                                optionHTML += '<option value="' + city.name + '">' + city.name + '</option>';
                             }
         
                             city_select.innerHTML = optionHTML;
                         })
                         
                     });
+                    // location.reload();
                 }
             </script>
             <script>
