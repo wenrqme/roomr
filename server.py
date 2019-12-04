@@ -56,7 +56,7 @@ states = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado", \
 
 allCities = []
 for state in states:
-    allCities += [(city, city) for city in cities[state]]
+    allCities += [city for city in cities[state]]
 
 # print (allCities)
 
@@ -112,6 +112,9 @@ class User(UserMixin, db.Model):
     genderPreferences = db.Column(db.String(3), index=True, nullable=False)
     cleanliness = db.Column(db.String(5), index = True, nullable = False)
 
+    # likes = relationship("Likes", secondary=likes_association_table)
+
+
     @property
     def password(self):
         raise AttributeError("password is write only")
@@ -145,7 +148,12 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         db.session.commit()
         return True
+
     
+# likes_association_table = Table('likes_association', Base.metadata,
+#     Column('user_id', Integer, ForeignKey('User.id')),
+#     Column('liked_id', Integer, ForeignKey('User.id'))
+# )
 
 db.create_all()
 
@@ -175,7 +183,7 @@ class SignupForm(FlaskForm):
 
     profilePicture = FileField("Profile Picture", validators=[FileAllowed(images, 'Images only!')])
     state = SelectField("State", choices=[(state, state) for state in states])
-    city = SelectField("City", choices=[])
+    city = SelectField("City")
     gender = SelectField("Gender", choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], validators=[DataRequired()])
     bio = TextAreaField("Bio", validators=[DataRequired()])
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
@@ -252,8 +260,12 @@ def signup():
     form = SignupForm()
     prefill = {'state': 'Alabama'}
     form = SignupForm(data=prefill)
+    # if request.method=="POST":
     form.city.choices = [(city, city) for city in cities[form.state.data]]
+    
     # print(form.validate_on_submit())
+    print(form.city.choices)
+    print("city:", form.city.data)
     if form.validate_on_submit():
         fname = form.fname.data
         lname = form.lname.data
@@ -349,6 +361,7 @@ def editProfile():
     prefill = {'state': str(user.state), 'city': str(user.city), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
     form = ProfileForm(data=prefill)
     form.city.choices = [(city, city) for city in cities[str(user.state)]]
+    # form.city.choices = allCities
     #form.city.data = user.city
 
     if form.validate_on_submit and request.method=="POST":
