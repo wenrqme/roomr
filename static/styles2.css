@@ -557,9 +557,6 @@ input[type=submit]:hover {
 	text-decoration: none;
   }
 
-  #chatInput{
-	  width: 500px;
-  }
 
   #likeButton{
 	  background-color:	#90EE90;
