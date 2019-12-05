@@ -79,24 +79,30 @@
                                     <span id="quest">Cleanliness:</span> <span id="response">{{user.cleanliness.capitalize()}} </span>
                                     {% if current_user.cleanliness == user.cleanliness %} &nbsp;
                                         <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
-                                    {% else %}
+                                    {% elif (current_user.cleanliness == "clean" and user.cleanliness == "messy") or (current_user.cleanliness == "messy" and user.cleanliness == "clean") %}
                                         <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='yellowwarning.png')}}" height="15" width="15"/>
                                     {% endif %}
                                 </div>
                                 <div> 
                                     <span id="quest">Noisiness:</span> <span id="response">{{user.noiselevel.capitalize()}} </span>
                                     {% if current_user.noiselevel == user.noiselevel %} &nbsp;
                                         <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
-                                    {% else %}
+                                    {% elif (current_user.noiselevel == "quiet" and user.noiselevel == "loud") or (current_user.noiselevel == "quiet" and user.noiselevel == "quiet") %}
                                         <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='yellowwarning.png')}}" height="15" width="15"/>
                                     {% endif %}
                                 </div>
                                 <div> 
                                     <span id="quest">Price Range:</span> <span id="response">{{user.price.capitalize()}} </span>
                                     {% if current_user.price == user.price %} &nbsp;
                                         <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
-                                    {% else %}
+                                    {%  elif (current_user.price == "$" and user.price == "$$$") or (current_user.price == "$$$" and user.price == "$") %}
                                         <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='yellowwarning.png')}}" height="15" width="15"/>
                                     {% endif %}
                                 </div>
                                 <div> 

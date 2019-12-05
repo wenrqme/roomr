@@ -678,7 +678,7 @@ def softPreferences(users):
 
         if current_user.price == user.price:
             total += 1
-        elif (current_user.price == "$" and user.cleanliness == "$$$") or (current_user.cleanliness == "$$$" and user.cleanliness == "$"):
+        elif (current_user.price == "$" and user.price == "$$$") or (current_user.price == "$$$" and user.price == "$"):
             total += 0
         else:
             total += 0.5
