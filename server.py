@@ -124,7 +124,10 @@ class User(UserMixin, db.Model):
     smoker = db.Column(db.String(3), index=True, nullable=False)
     sleep = db.Column(db.String(5), index=True, nullable=False)
     genderPreferences = db.Column(db.String(3), index=True, nullable=False)
-    cleanliness = db.Column(db.String(5), index = True, nullable = False)
+    cleanliness = db.Column(db.String(5), index=True, nullable=False)
+    price = db.Column(db.String(3), index=True, nullable=False)
+    noiselevel = db.Column(db.String(7), index=True, nullable=False)
+    petfriendly = db.Column(db.String(3), index=True, nullable=False)
 
     likes = db.relationship("User", 
                         secondary=user_likes,
@@ -212,8 +215,8 @@ class LoginForm(FlaskForm):
 
 class DeleteForm(FlaskForm):
     # email = StringField("Email", validators=[DataRequired(), Email()])
-    Delete = BooleanField("Delete")
-    Submit = SubmitField('Submit')
+    delete = BooleanField("Delete")
+    submit = SubmitField('Submit')
 
 class SignupForm(FlaskForm):
     fname = StringField("First Name", validators=[DataRequired()])
@@ -232,9 +235,9 @@ class SignupForm(FlaskForm):
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
     sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
     cleanliness = SelectField("Cleanliness", choices=[('messy', 'Messy'),('average', 'Average'), ('clean', 'Clean')], validators=[DataRequired()])
-    #price = SelectField("Price range", [('low', '$'),('average', '$$'), ('high', '$$$')], validators=[DataRequired()])
-    #noiselevel = SelectField("How loud are you?", [('quiet', 'Quiet'),('average', 'Average'), ('loud', 'Loud')], validators=[DataRequired()])
-    #petfriendly = SelectField("Pet-friendly?", [('yes', 'Yes'),('no', 'No')], validators=[DataRequired()])
+    price = SelectField("Price range", choices=[('low', '$'),('average', '$$'), ('high', '$$$')], validators=[DataRequired()])
+    noiselevel = SelectField("How loud are you?", choices=[('quiet', 'Quiet'),('average', 'Average'), ('loud', 'Loud')], validators=[DataRequired()])
+    petfriendly = SelectField("Pet-friendly?", choices=[('yes', 'Yes'),('no', 'No')], validators=[DataRequired()])
     genderPreferences = SelectField("Gender Preference", choices=[('male', 'Male Only'), ('female', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     
     submit = SubmitField("Submit")
@@ -252,7 +255,11 @@ class ProfileForm(FlaskForm):
     smoker = SelectField("Do you smoke?", choices=[('yes', 'Yes'), ('no', 'No')], validators=[DataRequired()])
     sleepPattern = SelectField("Sleep pattern", choices=[('late', 'Night Owl'), ('early', 'Early Bird')], validators=[DataRequired()])
     cleanliness = SelectField("Cleanliness", choices=[('messy', 'Messy'),('average', 'Average'), ('clean', 'Clean')], validators=[DataRequired()])
-    
+    price = SelectField("Price range", choices=[('low', '$'),('average', '$$'), ('high', '$$$')], validators=[DataRequired()])
+    noiselevel = SelectField("How loud are you?", choices=[('quiet', 'Quiet'),('average', 'Average'), ('loud', 'Loud')], validators=[DataRequired()])
+    petfriendly = SelectField("Pet-friendly?", choices=[('yes', 'Yes'),('no', 'No')], validators=[DataRequired()])
+  
+
     genderPreferences = SelectField("Gender Preference", choices=[('male', 'Male Only'), ('female', 'Female Only'), ('any', 'Any')], validators=[DataRequired()])
     submit = SubmitField("Submit")
 
@@ -301,7 +308,7 @@ def home():
 def signup():
     # profilePicture = request.files['profilePicture']
     fname, lname, email, dob, password = None, None, None, None, None
-    form = SignupForm()
+    # form = SignupForm()
     prefill = {'state': 'Alabama'}
     form = SignupForm(data=prefill)
     # if request.method=="POST":
@@ -317,9 +324,7 @@ def signup():
         dob = form.dob.data
         userPassword = form.password.data
 
-        # profilePicture = form.profilePicture.data
-        # filename = secure_filename(profilePicture.filename)
-        # profilePicture.save(os.path.join(app.instance_path, 'photos', filename))
+       
         if form.profilePicture.data != None:
             filename = images.save(form.profilePicture.data)
             file_url = images.url(filename)
@@ -337,11 +342,15 @@ def signup():
         sleepPattern = form.sleepPattern.data
         genderPreferences = form.genderPreferences.data
         cleanliness = form.cleanliness.data
+        price = form.price.data
+        noiselevel = form.noiselevel.data
+        petfriendly = form.petfriendly.data
         
         #add profilePicture=profilePicture to user
         user = User(email= email, fname= fname, lname=lname, dob= dob, password=userPassword, profilePicture=profilePicture, \
             state=state, city=city, cleanliness=cleanliness, gender=gender, \
-            bio = bio, smoker=smoker, sleep=sleepPattern, genderPreferences = genderPreferences)
+            bio = bio, smoker=smoker, sleep=sleepPattern, genderPreferences = genderPreferences, \
+            price=price, noiselevel=noiselevel, petfriendly=petfriendly)
         db.session.add(user)
         db.session.commit()
         print("form validated and submitted!")
@@ -357,6 +366,17 @@ def signup():
         flash('Some information is incorrect')
         flash(form.errors)
     return render_template("signup.html", form=form)
+
+
+@app.route("/resend", methods=["GET", "POST"])
+@login_required
+def resendVerification():
+    token = current_user.generate_confirmation_token()
+    app.config['SECRET_KEY'] = token
+    print(f"{app.config['SECRET_KEY']} is the token")
+    send_email(current_user.email, 'roomr Email Verification',
+                "email_Auth.txt", current_user, token=token)
+    return render_template('signupresp.html', user=current_user)
 
 #login page
 @app.route("/login", methods=["GET","POST"])
@@ -389,6 +409,16 @@ def send_email(to, subject, template, User, token):
     msg.body += url_for('confirm', token=token, _external=True)
     mail.send(msg)
 
+def send_match_email(subject, User, matchedUser):
+    me = app.config["MAIL_USERNAME"]
+    to = User.email
+    msg = Message(subject, sender=app.config["MAIL_USERNAME"], recipients=[
+                  to])
+    msg.body = ""
+    msg.body += "Hello " + User.fname + "!\n\n" + "You matched with " + matchedUser.fname + "! Check you matches page to chat!\n" 
+    msg.body += url_for('chatform', _external=True)
+    mail.send(msg)
+
 #logout
 @app.route("/logout")
 @login_required
@@ -397,23 +427,25 @@ def logout():
     flash("you have been logged out")
     return redirect(url_for("login"))
 
-@app.route("/user/delete", methods=['GET', 'POST'])
+@app.route("/user/delete", methods=["GET","POST"])
 @login_required
 def Delete():
     form = DeleteForm()
     # email = None 
+    # print(form.delete.data)
+    # print(form.submit.data)
     if form.validate_on_submit():
         # email = form.email.data
-        print("delete: " + current_user)
-
-        if form.Delete.data:
-            print("validated")
+        print("delete? " + current_user.fname)
+        if form.delete.data:
+            print("Deleting...")
             # obj = User.query.filter_by(email=form.email.data).first()
-            # db.session.delete(obj)
-            # db.session.commit()
+            db.session.delete(current_user)
+            db.session.commit()
             flash("Your account has been successfully deleted", "success")
             return redirect(url_for("login"))
-
+    else:
+        print("else")
     return render_template("Delete.html", form=form)
     
 #edit profile page
@@ -423,10 +455,9 @@ def editProfile():
     profilePicture, state, city, gender, bio, smoker, sleepPattern, cleanliness, genderPreferences = None, None, None, None, None, None, None, None, None
     user = current_user
 
-    prefill = {'state': str(user.state), 'city': str(user.city), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences)}
+    prefill = {'state': str(user.state), 'city': str(user.city), 'gender':str(user.gender), 'bio':str(user.bio), 'smoker':str(user.smoker), 'sleepPattern':str(user.sleep), 'cleanliness':str(user.cleanliness), 'genderPreferences':str(user.genderPreferences), 'noiselevel':str(user.noiselevel), 'price':str(user.price), 'petfriendly':str(user.petfriendly)}
     form = ProfileForm(data=prefill)
-    #form.city.choices = [(city, city) for city in cities[str(user.state)]]
-    form.city.choices = [(city, city) for city in cities[form.state.data]]
+    form.city.choices = [(city, city) for city in cities[str(user.state)]]
     # form.city.choices = allCities
     #form.city.data = user.city
 
@@ -442,13 +473,15 @@ def editProfile():
 
         user.state = form.state.data    
         user.city = form.city.data
-        print("state:", user.state, "city:", user.city)
         user.gender = form.gender.data
         user.bio = form.bio.data
         user.smoker = form.smoker.data
         user.sleep = form.sleepPattern.data
         user.cleanliness = form.cleanliness.data
         user.genderPreferences = form.genderPreferences.data
+        user.price = form.price.data
+        user.noiselevel = form.noiselevel.data
+        user.petfriendly = form.petfriendly.data
         db.session.add(user)
         db.session.commit()
         print("form validated and submitted!")
@@ -600,6 +633,8 @@ def like(uid):
     
     print(current_user.likes)
     if current_user in otherUser.likes:
+        if current_user.confirmed: send_match_email("roomr - New Match", current_user, otherUser)
+        if otherUser.confirmed: send_match_email("roomr - New Match", otherUser, current_user)
         current_user.matches.append(otherUser)
         otherUser.matches.append(current_user)
 
@@ -641,27 +676,27 @@ def softPreferences(users):
         else:
             total += 0.5
 
-        # if current_user.price == user.price:
-        #     total += 1
-        # elif (current_user.price == "$" and user.cleanliness == "$$$") or (current_user.cleanliness == "$$$" and user.cleanliness == "$"):
-        #     total += 0
-        # else:
-        #     total += 0.5
+        if current_user.price == user.price:
+            total += 1
+        elif (current_user.price == "$" and user.cleanliness == "$$$") or (current_user.cleanliness == "$$$" and user.cleanliness == "$"):
+            total += 0
+        else:
+            total += 0.5
 
-        # if current_user.noiselevel == user.noiselevel:
-        #     total += 1
-        # elif (current_user.noiselevel == "quiet" and user.noiselevel == "loud") or (current_user.noiselevel == quiet and user.noiselevel == "quiet"):
-        #     total += 0
-        # else:
-        #     total += 0.5
+        if current_user.noiselevel == user.noiselevel:
+            total += 1
+        elif (current_user.noiselevel == "quiet" and user.noiselevel == "loud") or (current_user.noiselevel == "quiet" and user.noiselevel == "quiet"):
+            total += 0
+        else:
+            total += 0.5
 
-        # if current_user.petfriendly == user.petfriendly:
-        #     total += 1
-        # else:
-        #     total += 0
+        if current_user.petfriendly == user.petfriendly:
+            total += 1
+        else:
+            total += 0
             
         #total will be a percentage
-        total = int((total/3) * 100)
+        total = int((total/6) * 100)
 
         points.append((user.email, total))
 

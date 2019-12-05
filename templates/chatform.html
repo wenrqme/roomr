@@ -16,7 +16,7 @@
                         {% if current_user.is_authenticated %}
                             <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                             <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                            <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                            <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
                             <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
                             <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                         {% else %}
@@ -28,7 +28,14 @@
         <div class="content" >
             <h1>Your Matches</h1>
             <form method="GET">
-
+                {% if not current_user.matches%}
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <h3 style="text-align: center;"> <i>You haven't matched with anyone yet...</i></h3>
+                {% endif %}
                 {% for user in current_user.matches %}
                 <a href="{{ url_for('privatechat', email = user.email) }}">
                     <div class="matchProfile"> 

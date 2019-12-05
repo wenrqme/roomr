@@ -15,26 +15,32 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a>
+                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
                 {% endif %}        
             </div>
         </nav>
-        <div class="content" >
-       <div>
-            <form method="POST">
-                    <label class="control control-checkbox">
-                            Delete{{ form.Delete() }}
-                            <div class="control_indicator"></div>
-                    </label>
-                    <div id="logSub">
-                            {{ form.Submit() }}
-                        </div>
-           </form>
+        <div class="content">
+       <div style="padding-left:40%;">
+        <br>
+        <br>
+        <br>
+        <br>
+        <h1>Delete account?</h1>
+        <form method="POST">
+            {{ form.csrf_token }}
+            <label class="control control-checkbox">
+                Delete{{ form.delete() }}
+                <div class="control_indicator"></div>
+            </label>
+        <div id="logSub">
+            {{ form.submit() }}
+        </div>
+        </form>
         </div>
         </div>
     </body>

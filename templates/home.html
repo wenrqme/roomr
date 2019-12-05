@@ -17,7 +17,7 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
                     <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
@@ -38,7 +38,7 @@
                     <br>
                     <br>
                     <br>
-                    <h3 style="text-align: center;"> We couldn't find anyone for you! </h3>
+                    <h3 style="text-align: center;"> <i>We couldn't find anyone for you!</i> </h3>
                 {% endif %}
                 {% for user in users %}
                 <div class="suggestedMatches">
@@ -83,6 +83,30 @@
                                         <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
                                     {% endif %}
                                 </div>
+                                <div> 
+                                    <span id="quest">Noisiness:</span> <span id="response">{{user.noiselevel.capitalize()}} </span>
+                                    {% if current_user.noiselevel == user.noiselevel %} &nbsp;
+                                        <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                                    {% endif %}
+                                </div>
+                                <div> 
+                                    <span id="quest">Price Range:</span> <span id="response">{{user.price.capitalize()}} </span>
+                                    {% if current_user.price == user.price %} &nbsp;
+                                        <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                                    {% endif %}
+                                </div>
+                                <div> 
+                                    <span id="quest">Pet Friendly:</span> <span id="response">{{user.petfriendly.capitalize()}} </span>
+                                    {% if current_user.petfriendly == user.petfriendly %} &nbsp;
+                                        <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                                    {% endif %}
+                                </div>
 
                             </div>
 
@@ -96,6 +120,8 @@
                             <br>
                             
                     </div>
+                    <br>
+                    <br>
 
 
 

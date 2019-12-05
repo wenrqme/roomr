@@ -566,3 +566,13 @@ input[type=submit]:hover {
   #dislikeButton{
 	background-color:	Tomato;
 }
+
+#deleteButton {
+	background-color:#8B0000;
+	color:white;
+}
+
+#deleteButton:hover {
+	background-color: red;
+	color:white;
+}

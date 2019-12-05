@@ -52,9 +52,9 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a>
+                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
@@ -70,7 +70,9 @@
 <textarea id="chat" cols="80" rows="20" readonly style="line-height: 20px;width:500px;">
 {% for msg in messages %}
 {{msg}}{% endfor %}
-</textarea><br><br>
+</textarea>
+            <!-- <br> -->
+            <br>
             <input id="text" type="text" size="80" placeholder="Enter your message here" style="width:500px;">
             <br><br>
         </div>
@@ -111,6 +113,30 @@
                     <div> 
                         <span id="quest">Cleanliness:</span> <span id="response">{{user.cleanliness.capitalize()}} </span>
                         {% if current_user.cleanliness == user.cleanliness %} &nbsp;
+                            <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                    </div>
+                    <div> 
+                        <span id="quest">Noisiness:</span> <span id="response">{{user.noiselevel.capitalize()}} </span>
+                        {% if current_user.noiselevel == user.noiselevel %} &nbsp;
+                            <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                    </div>
+                    <div> 
+                        <span id="quest">Price Range:</span> <span id="response">{{user.price.capitalize()}} </span>
+                        {% if current_user.price == user.price %} &nbsp;
+                            <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                    </div>
+                    <div> 
+                        <span id="quest">Pet Friendly:</span> <span id="response">{{user.petfriendly.capitalize()}} </span>
+                        {% if current_user.petfriendly == user.petfriendly %} &nbsp;
                             <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
                         {% else %}
                             <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>

@@ -15,9 +15,9 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('chatform')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a>
+                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a>
+                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
@@ -25,12 +25,13 @@
             </div>
         </nav>
     
-        <div class="content">
+        <div class="content" style="padding-left:10%;padding-right:10%;">
+            
             <!-- <h1> Account Info </h1>
             <form method="POST">
  
             </form> -->
-            <h1> Roommate Preferences </h1>
+            <h1> Edit Profile </h1>
             {% for message in get_flashed_messages() %} 
             <div class="alert">
                 {{ message }}
@@ -57,7 +58,6 @@
                 </table>
 
                 <!-- {{ form.gender.label }} : {{ form.gender() }} <br> -->
-                <br>
                 <h3>Location:</h3>
                 <table>
                     <tr>
@@ -99,6 +99,18 @@
                     <tr>
                         <td id="question">Cleanliness:  </td>
                         <td id="answ">{{ form.cleanliness(id="ansSel")}}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Price Range:  </td>
+                        <td id="answ">{{ form.price(id="ansSel")}}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Noise Level:  </td>
+                        <td id="answ">{{ form.noiselevel(id="ansSel")}}</td>
+                    </tr>
+                    <tr>
+                        <td id="question">Pet Friendly:  </td>
+                        <td id="answ">{{ form.petfriendly(id="ansSel")}}</td>
                     </tr>
                 </table>
                 <!-- {{ form.smoker.label }} : {{ form.smoker() }} <br> -->
