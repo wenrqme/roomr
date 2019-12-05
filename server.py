@@ -416,7 +416,7 @@ def send_match_email(subject, User, matchedUser):
                   to])
     msg.body = ""
     msg.body += "Hello " + User.fname + "!\n\n" + "You matched with " + matchedUser.fname + "! Check you matches page to chat!\n" 
-    msg.body += url_for('chatform', _external=True)
+    msg.body += url_for('matches', _external=True)
     mail.send(msg)
 
 #logout
@@ -541,9 +541,9 @@ def privatechat(email):
     return render_template('privatechat.html', user=user, name=name, room=room, messages=messages)
 
 #login page to enter a chatroom
-@app.route('/chatform', methods=["GET", "POST"])
+@app.route('/matches', methods=["GET", "POST"])
 @login_required
-def chatform():
+def matches():
     form = ChatForm()
     #need to query library.db for the matching table
     your_rooms = [chat.chatroom for chat in History.query.filter_by(fromID=current_user.id).all()]
@@ -581,7 +581,7 @@ def chatform():
     # elif request.method == 'GET':
     #     form.room.data = session.get('room')
     #modified_unique_rooms shows the email of the user who is not the current_user
-    return render_template('chatform.html', form=form, user=current_user, chatroom=modified_unique_rooms)
+    return render_template('matches.html', form=form, user=current_user, chatroom=modified_unique_rooms)
 
 
 @app.route("/confirm/<string:token>")
