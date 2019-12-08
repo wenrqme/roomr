@@ -17,20 +17,22 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
+                    {% if current_user.admin %}  
+                    <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                    {% endif %}
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
-                {% endif %}   
+                {% endif %}
+                
             </div>
     </nav>
 
     <!-- Homepage content -->
     <div class="content" >
         {% if current_user.is_authenticated %}
-            <h1> My Suggested Users </h1>
+            <h1> Suggested Users </h1>
             <!-- <div class="slideshow"> -->
                 {% if not users%}
                     <br>
@@ -43,9 +45,15 @@
                 {% for user in users %}
                 <div class="suggestedMatches">
                     <!-- <h2><div id="topright"> {{loop.index}} </div></h2> -->
-                    <h2 id="matchAmount"> {{ user.fname|capitalize }} is <b>{{ points[user.email] }}%</b> compatible! </h2>
+                    {% for message in get_flashed_messages() %} 
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
                     <!-- <p><a href="{{ url_for('privatechat', email = user.email) }}"> Chat with {{ user.fname }}! </a></p> -->
                     <div class="profile"> 
+                            <br>
+                            <h2 id="matchAmount"> {{ user.fname|capitalize }} is <b>{{ points[user.email] }}%</b> compatible! </h2>
                             <br>
                             <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:70%;" >
                             <h1>{{ user.fname }} {{ user.lname }}</h1>

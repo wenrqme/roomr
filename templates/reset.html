@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> roomr - reset password </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css')}}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    </head>
+    <body>
+        <nav id="sidebar"><br>
+            <div id="headercontainer">
+                <h3 id="bartitle"><b>roomr</b></h3>
+            </div>
+            <div id="barlinks">
+                    <a href="{{url_for('home')}}" id="baritem">Home</a> 
+                    {% if current_user.is_authenticated %}
+                        <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
+                        <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
+                        {% if current_user.admin %}  
+                        <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                        {% endif %}
+                        <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
+                    {% else %}
+                        <a href="{{url_for('login')}}" id="baritem">Login</a>
+                        <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
+                    {% endif %}     
+            </div>
+        </nav>
+    
+        <div class="content" style="padding-left:10%;padding-right:10%;">
+            <h1> Change Password </h1>
+            {% for message in get_flashed_messages() %} 
+            <div class="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            <form method="POST" id="signupForm">
+                <h3>New Password:</h3>
+                <table>
+                    <tr>
+                        <td>Password:</td>
+                        <td>Confirm Password:</td>
+                    </tr>
+                    <tr>
+                        <td> {{ form.password(type="password", placeholder="Password") }} </td>
+                        <td> {{ form.password2(type="password", placeholder="Confirm Password") }} </td>
+                    </tr>
+                </table>
+                {% for error in form.password.errors %}
+                    <span class = "error">{{ error}}</span>
+                {% endfor %}
+                <br>
+
+                Confirm Old Password: <br>
+                <div style="width:81%;">
+                {{ form.old_password(type="password", placeholder="Password", size = 30) }}
+                </div>
+                {% for error in form.old_password.errors %}
+                    <span class = "error">{{ error}}</span>
+                {% endfor %}
+    
+                {{ form.csrf_token }}
+                {{ form.submit() }}
+    
+                </form>
+                <br>
+               
+
+        </div>
+    </body>
+</html>

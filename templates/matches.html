@@ -16,18 +16,19 @@
                         {% if current_user.is_authenticated %}
                             <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
                             <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                            <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
+                            {% if current_user.admin %}  
+                            <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                            {% endif %}
                             <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                            <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                         {% else %}
                             <a href="{{url_for('login')}}" id="baritem">Login</a>
                             <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
-                        {% endif %}     
+                        {% endif %}   
                 </div>
             </nav>
         <div class="content" >
             <br>
-            <h1 style="text-align: center;">Your Matches</h1>
+            <h1 style="text-align: left;">Your Matches</h1>
             <form method="GET">
                 {% if not current_user.matches%}
                     <br>
@@ -37,16 +38,17 @@
                     <br>
                     <h3 style="text-align: center;"> <i>You haven't matched with anyone yet...</i></h3>
                 {% endif %}
+                <!-- <div style="float:left;"> -->
                 {% for user in current_user.matches %}
-                <a href="{{ url_for('privatechat', email = user.email) }}">
-                    <div class="matchProfile"> 
+                <a href="{{ url_for('privatechat', email = user.email) }}" style="float:center;">
+                    <div class="matchProfile" > 
                             <br>
                             <table>
                                 <tr>
                                     <td style="width:40%;">
                                         <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:30%;" >
                                     </td>
-                                    <td style="width:30%;">
+                                    <td style="width:40%;">
                                         {{ user.fname }} {{ user.lname }}
                                     </td>
                                 </tr>
@@ -55,7 +57,8 @@
                             
                             <!-- <a href="{{ url_for('privatechat', email = user.email) }}"> Chat with {{ user.fname }}! </a> -->
                             <br>
-                    </div>
+                    <!-- </div> -->
+                </div>
                 </a>
                 <br>
 

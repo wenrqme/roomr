@@ -52,9 +52,10 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
+                    {% if current_user.admin %}  
+                    <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                    {% endif %}
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
@@ -62,7 +63,7 @@
                 </div>
         </nav>
         <div class="content">
-            <div style="float:left;">
+            <div style="float:left;margin-right:50px">
             <h1> Private chat with {{ user.fname.capitalize() }}</h1>
             <a href="#" onclick="leave_room();"> << back to matches</a>
             <br>
@@ -80,7 +81,7 @@
         <br>
         <br>
 
-        <div class="profile" style="float:left;margin-left:50px;"> 
+        <div class="profile" style="float:left;"> 
                 <br>
                 <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:70%;" >
                 <h1>{{ user.fname }} {{ user.lname }}</h1>
@@ -148,6 +149,10 @@
                             <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
                         {% endif %}
                     </div>
+                    <br>
+                    <form>
+                        <button type="submit" class="homeButton" formaction="{{ url_for('unmatch', uid=user.id)}}">Unmatch</button>
+                    </form>
                     <br>
                     <br>
 

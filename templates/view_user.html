@@ -17,33 +17,84 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
+                    {% if current_user.admin %}  
+                    <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                    {% endif %}
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
-                {% endif %}      
+                {% endif %}     
                 </div>
         </nav>
     
         <div class="content" >
-            {% if current_user.is_authenticated %}
-                <h1> {{ other_user.fname|capitalize }} {{ other_user.lname|capitalize }} </h1>
-                <p> <b>Email address:</b> {{ other_user.email }}</p>
-                <p> <b>Date of Birth:</b> {{ other_user.dob }}</p>
-                <p> <b>Location:</b> {{ other_user.location }} </p>
-                <p> <b>Gender:</b> {{ other_user.gender }}</p>
-                <p> <b>Bio:</b> {{ other_user.bio }}</p>
-                <p> <b>Smoker:</b> {{ other_user.smoker }} </p>
-                <p> <b>Sleep Pattern:</b> {{ other_user.sleep }} </p>
-                <p> <b>Gender Preference:</b> {{ other_user.genderPreferences }} </p>
-                <div>
-                    <!-- <img src= "{{ current_user.profilepicture }}" alt = "Profile picture"> -->
+                <br>
+                <h3><a href="{{url_for('admin')}}"> << back to accounts</a></h3>
+                <br>
+                
+                {% if current_user.is_authenticated %}
+                <div style="padding-bottom:10px;float:left;padding-right:50px;">
+                    <!-- <h2 style="text-align: center;">Public Profile:</h2> -->
+                    <div class="profile"> 
+                        <br>
+                        <img src= "{{ user.profilePicture }}" alt = "Profile picture", style = "width:80%" >
+                        <h1>{{ user.fname }} {{ user.lname }}</h1>
+                        <div class="col1">
+                            <span id = "quest"> {{user.gender.capitalize()}} </span> 
+                            <span id = "response">Age: {{ user.dob.today().year - user.dob.year }}</span>
+                            <br>
+                            <div>{{user.city}}, {{user.state}}</div>
+                            <br>
+                        </div>
+                        <div id="bio"> Bio: <br> {{user.bio}} </div>
+                        <br>
+                        <div class="col2"> 
+                            <div> <span id="quest">Smoker:</span> <span id="response">{{user.smoker.capitalize()}} </span></div> <br>
+                            <div> <span id="quest">Sleep Pattern:</span> <span id="response">{{user.sleep.capitalize()}} </span></div> <br>
+                            <div> <span id="quest">Cleanliness:</span> <span id="response">{{user.cleanliness.capitalize()}} </span></div> <br>
+                            <div> <span id="quest">Noisiness:</span> <span id="response">{{user.noiselevel.capitalize()}} </span></div> <br>
+                            <div> <span id="quest">Price Range:</span> <span id="response">{{user.price.capitalize()}} </span></div> <br>
+                            <div> <span id="quest">Pet Friendly?</span> <span id="response">{{user.petfriendly.capitalize()}} </span></div> <br>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                    <br>
                 </div>
-            {% else %}
-                <h1> You do not have permission to view this page. Please login. </h1>
-            {% endif %}   
+                <div style="float:left;padding-bottom:20px;padding-right:50px;">
+                    <div class="profile"> 
+                            <br>
+                            Chat History:
+<textarea id="chat" cols="70" rows="20" readonly style="line-height: 20px;width:90%;">
+{% for msg in messages %}
+{{user.fname}}: {{msg.msg}}{% endfor %}
+</textarea>
+                    <br>
+                    <br>
+                    <h2 style="padding-top: 10px;">Account Info:</h2>
+                        {{ user.fname }} {{ user.lname }} <br>
+                        Birthday: {{ user.dob.month}}-{{ user.dob.day }}-{{ user.dob.year }} <br><br>
+                        <h3>Email: </h3> {{ user.email }} <br>
+                        <!-- <b>Verified: </b> -->
+                        {% if user.confirmed %}
+                            <b style="color:green;">Verified</b> <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                        {% else %}
+                            <b>Not Verified</b> <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                        {% endif %}
+                        <br>
+                        <br>
+                        <form>
+                            <button id="deleteButton" type="submit" class="homeButton" formaction="{{ url_for('adminDelete', uid=user.id)}}">Delete Account</button>
+                        </form>
+                        <br>
+                        <br>
+                    </div>
+                    
+
+                </div>
+    
+                {% endif %} 
 
         </div>
     </body>

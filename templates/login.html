@@ -16,13 +16,14 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
+                    {% if current_user.admin %}  
+                    <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                    {% endif %}
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
-                {% endif %}      
+                {% endif %} 
                 </div>
         </nav>
 
@@ -49,6 +50,10 @@
                         <td id="loginLabel">Password: </td>
                         <td id="loginField">{{ form.password(type="password", placeholder="Password") }}</td>
                     </tr>
+                    <tr>
+                        <td id="loginLabel"></td>
+                        <td id="loginField"><a href="{{url_for('get_reset_email')}}" id="forgotLink">Forgot your Password?</a></td>
+                    </tr>
                 </table>
                 <label class="control control-checkbox">
                         Remember Me{{ form.remember_me() }} 
@@ -64,6 +69,8 @@
                 <!-- {{ form.remember_me.label }}:<br> {{ form.remember_me() }} -->
                 <!-- {{ form.submit() }} -->
             </form>
+
+        
         </div>
     </body>
 </html>

@@ -17,9 +17,10 @@
                 {% if current_user.is_authenticated %}
                     <a href="{{url_for('matches')}}" id="baritem" >Matches</a>
                     <a href="{{url_for('user')}}" id="baritem" >Profile</a> 
-                    <!-- <a href="{{url_for('editProfile')}}" id="baritem" >Edit Profile</a> -->
+                    {% if current_user.admin %}  
+                    <a href="{{url_for('admin')}}" id="baritem" >Admin Panel</a> 
+                    {% endif %}
                     <a href="{{url_for('logout')}}" id="baritem" >Logout</a>
-                    <!-- <a href="{{url_for('Delete')}}" id="baritem" >Delete Account</a> -->
                 {% else %}
                     <a href="{{url_for('login')}}" id="baritem">Login</a>
                     <a href="{{url_for('signup')}}" id="baritem" >Signup</a>
@@ -32,10 +33,17 @@
             <br>
             <br>
             
+            
             {% if current_user.is_authenticated %}
-            <div style="padding-bottom:100px;">
-                <h2 style="text-align: center;">Public Profile:</h2>
-                <div class="profile"> 
+            <div style="padding-bottom:10px;float:left;padding-right:50px;">
+                {% for message in get_flashed_messages() %} 
+                <div class="alert" style="text-align:center">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                
+                <div class="profile">
+                    <h2 style="text-align: center;padding-top:20px;">Public Profile:</h2> 
                     <br>
                     <img src= "{{ current_user.profilePicture }}" alt = "Profile picture", style = "width:80%" >
                     <h1>{{ current_user.fname }} {{ current_user.lname }}</h1>
@@ -55,9 +63,6 @@
                         <div> <span id="quest">Noisiness:</span> <span id="response">{{current_user.noiselevel.capitalize()}} </span></div> <br>
                         <div> <span id="quest">Price Range:</span> <span id="response">{{current_user.price.capitalize()}} </span></div> <br>
                         <div> <span id="quest">Pet Friendly?</span> <span id="response">{{current_user.petfriendly.capitalize()}} </span></div> <br>
-
-
-
                     </div>
                     <br>
                     <form>
@@ -66,30 +71,35 @@
                     <br>
                     <br>
                 </div>
-                <br>
-                <div class="profile" style="width:500px;">
-                    <h2 style="padding-top: 10px;">Account Info:</h2>
-                    {{ current_user.fname }} {{ current_user.lname }} <br>
-                    Birthday: {{ current_user.dob.month}}-{{ current_user.dob.day }}-{{ current_user.dob.year }} <br><br>
-                    <h3>Email: </h3> {{ current_user.email }} <br>
-                    <!-- <b>Verified: </b> -->
-                    {% if current_user.confirmed %}
-                        <b style="color:green;">Verified</b> <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
-                    {% else %}
-                        <b>Not Verified</b> <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
-                        <form>
-                            <button type="submit" class="homeButton" formaction="{{ url_for('resendVerification')}}">Resend Confirmation Email</button>
-                        </form>
-                    {% endif %}
-                    <br>
-                    <br>
-                    <form>
-                        <button id="deleteButton" type="submit" class="homeButton" formaction="{{ url_for('Delete')}}">Delete Account</button>
-                    </form>
-                    <br>
-                    <br>
-                 </div>
             </div>
+            <div style="float:left;padding-bottom:20px;">
+                <div class="profile" style="width:500px;">
+                        <h2 style="padding-top: 20px;">Account Info:</h2>
+                        {{ current_user.fname }} {{ current_user.lname }} <br>
+                        Birthday: {{ current_user.dob.month}}-{{ current_user.dob.day }}-{{ current_user.dob.year }} <br><br>
+                        <h3>Email: </h3> {{ current_user.email }} <br>
+                        <!-- <b>Verified: </b> -->
+                        {% if current_user.confirmed %}
+                            <b style="color:green;">Verified</b> <img src="{{ url_for('static', filename='greencheck.png')}}" height="15" width="15"/>
+                            <form>
+                                <button type="submit" class="homeButton" formaction="{{ url_for('resetPassword')}}">Reset Password</button>
+                            </form>
+                        {% else %}
+                            <b>Not Verified</b> <img src="{{ url_for('static', filename='redx.png')}}" height="15" width="15"/>
+                            <form>
+                                <button type="submit" class="homeButton" formaction="{{ url_for('resendVerification')}}">Resend Confirmation Email</button>
+                            </form>
+                        {% endif %}
+                        <br>
+                        <br>
+                        <form>
+                            <button id="deleteButton" type="submit" class="homeButton" formaction="{{ url_for('Delete')}}">Delete Account</button>
+                        </form>
+                        <br>
+                        <br>
+                </div>
+            </div>
+
 
             {% endif %}
             
