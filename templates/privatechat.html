@@ -65,7 +65,7 @@
         <div class="content">
             <div style="float:left;margin-right:50px">
             <h1> Private chat with {{ user.fname.capitalize() }}</h1>
-            <a href="#" onclick="leave_room();"> << back to matches</a>
+            <a href="{{url_for('matches')}}" onclick="leave_room();"> << back to matches</a>
             <br>
             <br>
 <textarea id="chat" cols="80" rows="20" readonly style="line-height: 20px;width:500px;">
