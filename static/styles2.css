@@ -597,3 +597,8 @@ input[type=submit]:hover {
 #forgotLink:hover {
 	color: black;
 }
+
+.homeDesc {
+	text-align:center;
+	width:50%;
+}

@@ -198,8 +198,25 @@
                 }
             </script>
         {% else %}
-            <h1> welcome to roomr. </h1>
-            <p> New user? Sign up now! </p>
+        <h1> welcome to roomr. </h1>
+        <div class="homeDesc">
+            <br>
+            <h2> what is roomr?</h2>
+            <p> It’s like Tinder but for roommates!</p>
+            <p> Users will be able to match up and chat with potential roommates based on the preferences they choose. 
+                Don’t like the lights on after 10 pm? Only want to room with someone who doesn’t smoke? 
+                 Your matches will be people who fit your selected preferences, so you no longer have to waste your time connecting with someone whom you wouldn’t want to live with in the first place.</p>
+            <br>
+            <h2> how does it work? </h2>
+            <p> Our algorithm will present you with users we think fit you best. 
+                 If you like what you see, you can then choose to "Like" or "Dislike."
+                  If both people mutually like each other, you're a Match! You can then head to your matches to chat. </p>
+            <br>
+            <br>
+            <h2> get started </h2>
+            <p> Returning user? <a href="{{url_for('login')}}" id="forgotLink"> Sign in here</a></p>
+            <p> New user? <a href="{{url_for('signup')}}" id="forgotLink">  Sign up now!</a> </p>
+        </div>
         {% endif %}
     </div>
 
