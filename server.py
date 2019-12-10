@@ -283,6 +283,7 @@ def signup():
             filename = images.save(form.profilePicture.data)
             file_url = images.url(filename)
             profilePicture = file_url
+            # profilePicture = images.path(filename)
         else:
             profilePicture = url_for('static', filename="generic-profile-picture.jpg")
         state = form.state.data
